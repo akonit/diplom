@@ -1,7 +1,10 @@
 package diplom
 
 import groovy.beans.Bindable
+import lowmodel.attribute.*;
 
+@Bindable
 class DiplomModel {
-   // @Bindable String propName
+	BasicAttribute battr;//назвать по-нормальному, и вообще тут map наверное.
+   // String propName
 }
