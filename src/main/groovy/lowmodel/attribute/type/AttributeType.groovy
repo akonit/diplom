@@ -7,7 +7,7 @@ import interfaces.SubAttributeTypes
  */
 public enum AttributeType {
 		STRING ("String", StringTypes.getAllNames()), 
-		DATA_TIME(null, null), 
+		DATE_TIME("Datetime", DatetimeTypes.getAllNames()), 
 		BLOB(null, null),
 		NUMBER(null, null),
 		DEFAULT(null, null);//все предыдущие типы. возможно, нет смысла его отдельно делать

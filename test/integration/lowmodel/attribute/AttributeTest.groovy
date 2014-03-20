@@ -2,8 +2,8 @@ package lowmodel.attribute
 
 import lowmodel.attribute.type.AttributeType;
 import lowmodel.attribute.type.StringTypes
+import utils.*
 
-import org.junit.After;
 import org.junit.Test
 
 import static org.junit.Assert.*;
@@ -18,7 +18,7 @@ class AttributeTest {
 	public void testSerialization() {
 		def BasicAttribute battr = new BasicAttribute();
 		battr.attrType = AttributeType.STRING;
-		battr.subAttributeType = StringTypes.CLOB.name;
+		battr.subAttributeType = StringTypes.CLOB;
 		battr.definition = "test attr";
 		battr.keyGroup = KeyGroup.PRIMARY_KEY;
 		battr.id = String.valueOf(System.currentTimeMillis());
@@ -41,27 +41,31 @@ class AttributeTest {
 	}
 	
 	/**
-	 * Проверка группы типов атрибута 'String' - атрибут содержит группу
-	 * и конкретный элемент группы. Можно получить список элементво в группе,
-	 * можно выгрузить полуню информацию о конкретном элементе.
+	 * Изменяемые типы изменяются, неизменяемые -нет.
 	 */
 	@Test
-	public void testStringAttributeType() {
+	public void testSubAttrTypeModification() {
+		//назначение нового имени изменяемому типу
 		def BasicAttribute battr = new BasicAttribute();
 		battr.attrType = AttributeType.STRING;
-		List<String> subTypes = battr.attrType.subTypes;
-
-		//проверка получения списка типов атрибута в группе.
-		for (StringTypes type : StringTypes.values()) {
-			assertTrue(subTypes.contains(type.name));
-		}
+		AttrTypeSignification.signSubTypeToAttr(battr, StringTypes.NVARCHAR.name);
 		
-		//проверка получения полной информации по атрибуту
-		battr.subAttributeType = StringTypes.CLOB.name;
-		StringTypes st = battr.getFullSubAttributeData();
+		assertEquals(battr.activeSubAttributeType, StringTypes.NVARCHAR.name);
 		
-		assertEquals(st.name, StringTypes.CLOB.name);
-		assertEquals(st.database, StringTypes.CLOB.database);
-		assertEquals(st.modifyable, StringTypes.CLOB.modifyable);
+		String myNewType = "NVARCHAR(128)";
+		boolean isSuccess = battr.changeSubAttrType(myNewType);
+		
+		assertEquals(battr.activeSubAttributeType, myNewType);
+		assertTrue(isSuccess);
+		
+		//назначение нового имени неизменяемому типу
+		AttrTypeSignification.signSubTypeToAttr(battr, StringTypes.CHAR.name);
+		assertEquals(battr.activeSubAttributeType, StringTypes.CHAR.name);
+		
+		myNewType = "CHAR!11";
+		isSuccess = battr.changeSubAttrType(myNewType);
+		
+		assertEquals(battr.activeSubAttributeType, StringTypes.CHAR.name);
+		assertFalse(isSuccess);		
 	}
 }
