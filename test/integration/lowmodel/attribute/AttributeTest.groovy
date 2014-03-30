@@ -48,7 +48,7 @@ class AttributeTest {
 		//назначение нового имени изменяемому типу
 		def BasicAttribute battr = new BasicAttribute();
 		battr.attrType = AttributeType.STRING;
-		AttrTypeSignification.signSubTypeToAttr(battr, StringTypes.NVARCHAR.name);
+		AttributeUtils.signSubTypeToAttr(battr, StringTypes.NVARCHAR.name);
 		
 		assertEquals(battr.activeSubAttributeType, StringTypes.NVARCHAR.name);
 		
@@ -59,7 +59,7 @@ class AttributeTest {
 		assertTrue(isSuccess);
 		
 		//назначение нового имени неизменяемому типу
-		AttrTypeSignification.signSubTypeToAttr(battr, StringTypes.CHAR.name);
+		AttributeUtils.signSubTypeToAttr(battr, StringTypes.CHAR.name);
 		assertEquals(battr.activeSubAttributeType, StringTypes.CHAR.name);
 		
 		myNewType = "CHAR!11";

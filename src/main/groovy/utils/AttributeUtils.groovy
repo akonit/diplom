@@ -4,7 +4,11 @@ import interfaces.SubAttributeTypes;
 import lowmodel.attribute.BasicAttribute
 import lowmodel.attribute.type.*
 
-final class AttrTypeSignification {
+final class AttributeUtils {
+	
+	private AttributeUtils() {
+		
+	}
 
 	/**
 	 * Назначение атрибуту типа с указанным названием. Метод для view

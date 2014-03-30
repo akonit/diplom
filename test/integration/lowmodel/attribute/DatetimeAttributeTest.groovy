@@ -20,7 +20,7 @@ public class DatetimeAttributeTest {
 		def BasicAttribute battr = new BasicAttribute();
 		battr.attrType = AttributeType.DATE_TIME;
 		List<String> subTypes = battr.attrType.subTypes;
-		AttrTypeSignification.signSubTypeToAttr(battr, DatetimeTypes.DATE.name);//имитация выбора типа на форме.
+		AttributeUtils.signSubTypeToAttr(battr, DatetimeTypes.DATE.name);//имитация выбора типа на форме.
 
 		//проверка получения списка типов атрибута в группе.
 		for (DatetimeTypes type : DatetimeTypes.values()) {

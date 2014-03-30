@@ -12,6 +12,11 @@ import interfaces.SubAttributeTypes
  * выдается список названий типов атрибута. по выбранному названию атрибуту назначается
  * конкретный тип.
  */
+//добавить ссылку на родительскую таблицу? для удобства обработки связей между таблицами 
+//по атрибутам. или хранить их в связи рядом
+//добавить билдер
+//добавить имя атрибута - его в лог и на отображение в таблице. чтобы
+//было что то вроде "String (FK)"
 class BasicAttribute implements LowModelApi, Serializable {
 	
 	static Logger log = Logger.getLogger(BasicAttribute.class.getName());
@@ -69,5 +74,37 @@ class BasicAttribute implements LowModelApi, Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public AttributeType getAttrType() {
+		return attrType;
+	}
+
+	public void setAttrType(AttributeType attrType) {
+		this.attrType = attrType;
+	}
+
+	public SubAttributeTypes getSubAttributeType() {
+		return subAttributeType;
+	}
+
+	public void setSubAttributeType(SubAttributeTypes subAttributeType) {
+		this.subAttributeType = subAttributeType;
+	}
+
+	public String getDefinition() {
+		return definition;
+	}
+
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
+
+	public KeyGroup getKeyGroup() {
+		return keyGroup;
+	}
+
+	public void setKeyGroup(KeyGroup keyGroup) {
+		this.keyGroup = keyGroup;
 	}
 }

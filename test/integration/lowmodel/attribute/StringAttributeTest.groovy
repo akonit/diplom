@@ -20,7 +20,7 @@ public class StringAttributeTest {
 		def BasicAttribute battr = new BasicAttribute();
 		battr.attrType = AttributeType.STRING;
 		List<String> subTypes = battr.attrType.subTypes;
-		AttrTypeSignification.signSubTypeToAttr(battr, StringTypes.CLOB.name);//имитация выбора типа на форме.
+		AttributeUtils.signSubTypeToAttr(battr, StringTypes.CLOB.name);//имитация выбора типа на форме.
 
 		//проверка получения списка типов атрибута в группе.
 		for (StringTypes type : StringTypes.values()) {
