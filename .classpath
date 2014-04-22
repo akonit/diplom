@@ -65,5 +65,8 @@
 	<classpathentry kind="var" path="GRIFFON_HOME/lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="var" path="GRIFFON_HOME/lib/itext-2.0.8.jar"/>
 	<classpathentry kind="var" path="GRIFFON_HOME"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.6.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="lib/sqljdbc4.jar"/>
 	<classpathentry kind="output" path="USER_HOME/.griffon/1.5.0/projects/diplom/classes/main"/>
 </classpath>

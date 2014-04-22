@@ -1,15 +1,17 @@
-package lowmodel.attribute;
+package lowmodel.relationship;
 
 import java.util.Arrays;
 
+import lowmodel.attribute.BasicAttribute;
+import lowmodel.attribute.KeyGroup;
 import lowmodel.attribute.type.AttributeType;
 import lowmodel.attribute.type.StringTypes;
 import lowmodel.entity.BasicEntity;
 import lowmodel.relationship.BasicRelationship;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
+import static org.junit.Assert.*;
 import utils.RelationshipUtils;
 
 public class RelationshipTest {

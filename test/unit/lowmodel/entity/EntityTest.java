@@ -1,9 +1,10 @@
-package lowmodel.attribute;
+package lowmodel.entity;
 
 import java.util.Arrays;
 
 import lowmodel.entity.BasicEntity;
 import lowmodel.attribute.BasicAttribute;
+import lowmodel.attribute.KeyGroup;
 import lowmodel.attribute.type.AttributeType;
 import lowmodel.attribute.type.DatetimeTypes;
 import lowmodel.attribute.type.StringTypes;
