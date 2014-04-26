@@ -30,8 +30,7 @@ final class RelationshipUtils {
 		BasicRelationship relationship = new BasicRelationship();
 		
 		BasicAttribute toAttr = new BasicAttribute();
-		toAttr.attrType = fromAttr.attrType;
-		toAttr.subAttributeType = fromAttr.subAttributeType;
+		toAttr.attributeType = fromAttr.attributeType;
 		toAttr.definition = fromAttr.definition;
 		toAttr.keyGroup = KeyGroup.FOREIGN_KEY;
 		toAttr.id = String.valueOf(System.currentTimeMillis());//заменить на UUID? или и так сойдет

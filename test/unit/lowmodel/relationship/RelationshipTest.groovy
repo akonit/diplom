@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 import lowmodel.attribute.BasicAttribute;
 import lowmodel.attribute.KeyGroup;
-import lowmodel.attribute.type.AttributeType;
-import lowmodel.attribute.type.StringTypes;
+import lowmodel.attribute.type.AttributeTypes;
 import lowmodel.entity.BasicEntity;
 import lowmodel.relationship.BasicRelationship;
 
@@ -24,8 +23,7 @@ public class RelationshipTest {
 		m2.setName("m2");
 		
 		BasicAttribute a1 = new BasicAttribute();
-		a1.setAttrType(AttributeType.STRING);
-		a1.setSubAttributeType(StringTypes.CLOB);
+		a1.setAttributeType(AttributeTypes.CLOB);
 		a1.setDefinition("test attr" + System.currentTimeMillis());
 		a1.setKeyGroup(KeyGroup.PRIMARY_KEY);
 		a1.setId(String.valueOf(System.currentTimeMillis()));
@@ -34,8 +32,7 @@ public class RelationshipTest {
 		BasicRelationship relation = RelationshipUtils.assignRelationship(m1, m2, a1);
 		assertNotNull(m2.getAttributes());
 		//создать метод assertAttributes в базовом классе. и базовый класс тоже создать
-		assertEquals(m2.getAttributes().get(0).getAttrType(), a1.getAttrType());
-		assertEquals(m2.getAttributes().get(0).getSubAttributeType(), a1.getSubAttributeType());
+		assertEquals(m2.getAttributes().get(0).getAttributeType(), a1.getAttributeType());
 		assertEquals(m2.getAttributes().get(0).getDefinition(), a1.getDefinition());
 		assertEquals(m2.getAttributes().get(0).getKeyGroup(), KeyGroup.FOREIGN_KEY);
 		
@@ -51,8 +48,7 @@ public class RelationshipTest {
 		m2.setName("m2");
 		
 		BasicAttribute a1 = new BasicAttribute();
-		a1.setAttrType(AttributeType.STRING);
-		a1.setSubAttributeType(StringTypes.CLOB);
+		a1.setAttributeType(AttributeTypes.CLOB);
 		a1.setDefinition("test attr" + System.currentTimeMillis());
 		a1.setKeyGroup(KeyGroup.PRIMARY_KEY);
 		a1.setId(String.valueOf(System.currentTimeMillis()));

@@ -1,15 +1,15 @@
 package lowmodel.attribute
 
 import lowmodel.attribute.type.*;
-import org.apache.log4j.Logger
-import interfaces.LowModelApi
-import interfaces.SubAttributeTypes
+
+import org.apache.log4j.Logger;
+
+import interfaces.LowModelApi;
 
 /**
  * Базовое поле таблицы - pk, fk, просто атрибут.
  * keyGroups - способ назначения типа ключа в ервине!
- * Предполагаемое взаимодействие с view - по выбранной группе
- * выдается список названий типов атрибута. по выбранному названию атрибуту назначается
+ * Предполагаемое взаимодействие с view - по выбранному названию атрибута назначается
  * конкретный тип.
  */
 //добавить ссылку на родительскую таблицу? для удобства обработки связей между таблицами 
@@ -27,18 +27,16 @@ class BasicAttribute implements LowModelApi, Serializable {
 
 	private String id;
 	
-	private AttributeType attrType;
-	
 	/**
 	 * Тип атрибута в бд.
 	 */
-	private SubAttributeTypes subAttributeType;
+	private AttributeTypes attributeType;
 	
 	/**
 	 * Кастомный тип атрибута. varchar(20) например. на форме предполагается отображать
 	 * и изменять именно его
 	 */
-	private String activeSubAttributeType;
+	private String activeAttributeType;
 	
 	/**
 	 * описание атрибута
@@ -56,13 +54,13 @@ class BasicAttribute implements LowModelApi, Serializable {
 	 * @param newSubTypeName новый тип атрибута
 	 * @return успех/неуспех операции
 	 */
-	public boolean changeSubAttrType(String newSubTypeName) {
-		if (subAttributeType.modifyable) {
-			activeSubAttributeType = newSubTypeName;
-		    log.debug("changeSubAttrType {" + newSubTypeName + "} - ok");
+	public boolean changeSubAttrType(String newTypeName) {
+		if (attributeType.modifyable) {
+			activeAttributeType = newTypeName;
+		    log.debug("changeAttrType {" + newTypeName + "} - ok");
 			return true;
 		} else {
-		    log.error("changeSubAttrType {" + newSubTypeName + "} - fail, not modifyable type");
+		    log.error("changeAttrType {" + newTypeName + "} - failed, not modifyable type");
 			return false;
 		}
 	}
@@ -76,20 +74,12 @@ class BasicAttribute implements LowModelApi, Serializable {
 		this.id = id;
 	}
 
-	public AttributeType getAttrType() {
-		return attrType;
+	public AttributeTypes getAttributeType() {
+		return attributeType;
 	}
 
-	public void setAttrType(AttributeType attrType) {
-		this.attrType = attrType;
-	}
-
-	public SubAttributeTypes getSubAttributeType() {
-		return subAttributeType;
-	}
-
-	public void setSubAttributeType(SubAttributeTypes subAttributeType) {
-		this.subAttributeType = subAttributeType;
+	public void setAttributeType(AttributeTypes attributeType) {
+		this.attributeType = attributeType;
 	}
 
 	public String getDefinition() {

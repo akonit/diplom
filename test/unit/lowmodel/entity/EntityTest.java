@@ -5,9 +5,7 @@ import java.util.Arrays;
 import lowmodel.entity.BasicEntity;
 import lowmodel.attribute.BasicAttribute;
 import lowmodel.attribute.KeyGroup;
-import lowmodel.attribute.type.AttributeType;
-import lowmodel.attribute.type.DatetimeTypes;
-import lowmodel.attribute.type.StringTypes;
+import lowmodel.attribute.type.AttributeTypes;
 
 import org.junit.Test;
 
@@ -21,15 +19,13 @@ public class EntityTest {
 		entity.setName("newEntity");
 		
 		BasicAttribute battr1 = new BasicAttribute();
-		battr1.setAttrType(AttributeType.STRING);
-		battr1.setSubAttributeType(StringTypes.VARCHAR);
+		battr1.setAttributeType(AttributeTypes.VARCHAR);
 		battr1.setDefinition("attr1");
 		battr1.setKeyGroup(KeyGroup.PRIMARY_KEY);
 		battr1.setId(String.valueOf(System.currentTimeMillis()));
 
 		BasicAttribute battr2 = new BasicAttribute();
-		battr2.setAttrType(AttributeType.DATE_TIME);
-		battr2.setSubAttributeType(DatetimeTypes.TIMESTAMP);
+		battr2.setAttributeType(AttributeTypes.TIMESTAMP);
 		battr2.setDefinition("attr2");
 		battr2.setKeyGroup(KeyGroup.FOREIGN_KEY);
 		battr2.setId(String.valueOf(System.currentTimeMillis()));

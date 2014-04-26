@@ -1,6 +1,5 @@
 package utils;
 
-import interfaces.SubAttributeTypes;
 import lowmodel.attribute.BasicAttribute
 import lowmodel.attribute.type.*
 
@@ -11,23 +10,12 @@ final class AttributeUtils {
 	}
 
 	/**
-	 * Назначение атрибуту типа с указанным названием. Метод для view
+	 * Назначение атрибуту типа с указанным названием. Метод предположительно для view
 	 * @param attr атрибут
 	 * @param subTypeName имя назначаемого типа
 	 */
-	public static void signSubTypeToAttr(BasicAttribute attr, String subTypeName) {
-		attr.activeSubAttributeType = subTypeName;
-		switch (attr.attrType) {
-			case AttributeType.STRING:
-				attr.subAttributeType =  StringTypes.getByName(subTypeName);
-				break;
-
-			case AttributeType.DATE_TIME:
-				attr.subAttributeType =  DatetimeTypes.getByName(subTypeName);
-				break;
-
-			default:
-				break;
-		}
+	public static void signTypeToAttr(BasicAttribute attr, String typeName) {
+		attr.activeAttributeType = typeName;
+		attr.attributeType =  AttributeTypes.getByName(typeName);
 	}
 }
