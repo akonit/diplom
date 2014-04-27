@@ -1,4 +1,4 @@
-package lowmodel.attribute
+package attribute
 
 import lowmodel.attribute.type.*;
 
@@ -17,9 +17,9 @@ import interfaces.LowModelApi;
 //добавить билдер
 //добавить имя атрибута - его в лог и на отображение в таблице. чтобы
 //было что то вроде "String (FK)"
-class BasicAttribute implements LowModelApi, Serializable {
+class Attribute implements LowModelApi, Serializable {
 	
-	static Logger log = Logger.getLogger(BasicAttribute.class.getName());
+	static Logger log = Logger.getLogger(Attribute.class.getName());
 	
 	//может ли один атрибут иметь несколько групп?
 	
@@ -51,7 +51,7 @@ class BasicAttribute implements LowModelApi, Serializable {
 	//вынести в контроллер?
 	/**
 	 * Установка пользовательского типа атрибута
-	 * @param newSubTypeName новый тип атрибута
+	 * @param newTypeName новый тип атрибута
 	 * @return успех/неуспех операции
 	 */
 	public boolean changeSubAttrType(String newTypeName) {

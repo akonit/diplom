@@ -1,21 +1,22 @@
-package connection;
+package sql;
 
 import groovy.sql.Sql
+
 import org.apache.log4j.Logger
 
 public class ConnectionManager {
 	
 	static Logger log = Logger.getLogger(ConnectionManager.class.getName());
 
-	public Sql openAndGetConnection(String url, String user, String password, Driver driver) {
+	public Sql openAndGetConnection(String url, String user, String password, Database driver) {
 		try {
 			def sql = Sql.newInstance(url, user, password, driver.getName())
 			log.info("openAndGetConnection: " + url + ", " + user + ", " + password + ",  "
-				+ driver.name + " - ok");
+				+ driver.driver + " - ok");
 			return sql
 		} catch (Exception e) {
 			log.error("openAndGetConnection: " + url + ", " + user + ", " + password + ",  "
-				+ driver.name + " - fail, " + e);
+				+ driver.driver + " - fail, " + e);
 			throw new RuntimeException("open connection - fail");
 		}
 	}

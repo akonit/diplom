@@ -1,10 +1,14 @@
-package connection;
+package sql;
+
+import java.util.List;
 
 import groovy.sql.Sql;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
+import sql.ConnectionManager;
+import sql.Database;
 import static org.junit.Assert.*;
 
 public class ConnectionManagerTest {
@@ -18,7 +22,7 @@ public class ConnectionManagerTest {
 	public void testFailOpenConnection() {
 		boolean isException = false;
 		try {
-			cm.openAndGetConnection("wrongUrl", "user", "123456", Driver.ORACLE);
+			cm.openAndGetConnection("wrongUrl", "user", "123456", Database.ORACLE);
 		} catch (Exception e) {
 			isException = true;
 		}
@@ -39,12 +43,22 @@ public class ConnectionManagerTest {
 		String user = "root";
 		String password = "password";
 		try {
-			Sql sql = cm.openAndGetConnection(url, user, password, Driver.MY_SQL);
+			Sql sql = cm.openAndGetConnection(url, user, password, Database.MY_SQL);
 			cm.closeConnection(sql);
 		} catch (Exception e) {
 			isException = true;
 		}
 		
 		assertFalse(isException);
+	}
+	
+	@Test
+	public void testDatabaseEnum() {
+		List<String> dbs = Database.getAllNames();
+		assertNotNull(dbs);
+		assertTrue(dbs.contains(Database.MY_SQL.getName()));
+		
+		Database mySql = Database.getByName(Database.MY_SQL.getName());
+		assertEquals(mySql, Database.MY_SQL);
 	}
 }

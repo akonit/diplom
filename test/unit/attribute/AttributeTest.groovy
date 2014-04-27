@@ -1,10 +1,12 @@
-package lowmodel.attribute
+package attribute
 
-import lowmodel.attribute.type.AttributeTypes
 import utils.*
 
 import org.junit.Test
 
+import attribute.AttributeTypes;
+import attribute.Attribute;
+import attribute.KeyGroup;
 import static org.junit.Assert.*;
 
 //выделить как минимум assert в базовый класс
@@ -15,7 +17,7 @@ class AttributeTest {
 	 */
 	@Test
 	public void testSerialization() {
-		def BasicAttribute battr = new BasicAttribute();
+		def Attribute battr = new Attribute();
 		battr.attributeType = AttributeTypes.CLOB;
 		battr.definition = "test attr";
 		battr.keyGroup = KeyGroup.PRIMARY_KEY;
@@ -31,10 +33,10 @@ class AttributeTest {
 		def newBattr= inp.readObject()
 		inp.close()
 		
-		assertEquals(battr.id, ((BasicAttribute) newBattr).id);
-		assertEquals(battr.definition, ((BasicAttribute) newBattr).definition);
-		assertEquals(battr.attributeType, ((BasicAttribute) newBattr).attributeType);
-		assertEquals(battr.keyGroup, ((BasicAttribute) newBattr).keyGroup);
+		assertEquals(battr.id, ((Attribute) newBattr).id);
+		assertEquals(battr.definition, ((Attribute) newBattr).definition);
+		assertEquals(battr.attributeType, ((Attribute) newBattr).attributeType);
+		assertEquals(battr.keyGroup, ((Attribute) newBattr).keyGroup);
 	}
 	
 	/**
@@ -43,7 +45,7 @@ class AttributeTest {
 	@Test
 	public void testSubAttrTypeModification() {
 		//назначение нового имени изменяемому типу
-		def BasicAttribute battr = new BasicAttribute();
+		def Attribute battr = new Attribute();
 		AttributeUtils.signTypeToAttr(battr, AttributeTypes.NVARCHAR.name);
 		
 		assertEquals(battr.activeAttributeType, AttributeTypes.NVARCHAR.name);
@@ -70,7 +72,7 @@ class AttributeTest {
 	 */
 	@Test
 	public void testDatetimeAttributeType() {
-		def BasicAttribute battr = new BasicAttribute();
+		def Attribute battr = new Attribute();
 		List<String> types = AttributeTypes.getAllNames();
 		AttributeUtils.signTypeToAttr(battr, AttributeTypes.DATE.name);//имитация выбора типа на форме.
 		
@@ -79,7 +81,7 @@ class AttributeTest {
 		//проверка получения полной информации по атрибуту
 		assertEquals(battr.attributeType.name, AttributeTypes.DATE.name);
 		assertEquals(battr.activeAttributeType, AttributeTypes.DATE.name);
-		assertEquals(battr.attributeType.database, AttributeTypes.DATE.database);
+		assertEquals(battr.attributeType.databases, AttributeTypes.DATE.databases);
 		assertEquals(battr.attributeType.modifyable, AttributeTypes.DATE.modifyable);
 	}
 	
@@ -89,7 +91,7 @@ class AttributeTest {
 	 */
 	@Test
 	public void testStringAttributeType() {
-		def BasicAttribute battr = new BasicAttribute();
+		def Attribute battr = new Attribute();
 		List<String> types = AttributeTypes.getAllNames();
 		AttributeUtils.signTypeToAttr(battr, AttributeTypes.CLOB.name);//имитация выбора типа на форме.
 
@@ -98,7 +100,7 @@ class AttributeTest {
 		//проверка получения полной информации по атрибуту
 		assertEquals(battr.attributeType.name, AttributeTypes.CLOB.name);
 		assertEquals(battr.activeAttributeType, AttributeTypes.CLOB.name);
-		assertEquals(battr.attributeType.database, AttributeTypes.CLOB.database);
+		assertEquals(battr.attributeType.databases, AttributeTypes.CLOB.databases);
 		assertEquals(battr.attributeType.modifyable, AttributeTypes.CLOB.modifyable);
 	}
 }

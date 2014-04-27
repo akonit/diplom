@@ -1,15 +1,14 @@
-package lowmodel.relationship;
+package relationship;
 
 import java.util.Arrays;
 
-import lowmodel.attribute.BasicAttribute;
-import lowmodel.attribute.KeyGroup;
-import lowmodel.attribute.type.AttributeTypes;
-import lowmodel.entity.BasicEntity;
-import lowmodel.relationship.BasicRelationship;
-
 import org.junit.Test;
 
+import attribute.AttributeTypes;
+import attribute.Attribute;
+import attribute.KeyGroup;
+import relationship.Relationship;
+import entity.Entity;
 import static org.junit.Assert.*;
 import utils.RelationshipUtils;
 
@@ -17,19 +16,19 @@ public class RelationshipTest {
 
 	@Test
 	public void testRelationshipCreation() {
-		BasicEntity m1 = new BasicEntity();
+		Entity m1 = new Entity();
 		m1.setName("m1");
-		BasicEntity m2 = new BasicEntity();
+		Entity m2 = new Entity();
 		m2.setName("m2");
 		
-		BasicAttribute a1 = new BasicAttribute();
+		Attribute a1 = new Attribute();
 		a1.setAttributeType(AttributeTypes.CLOB);
 		a1.setDefinition("test attr" + System.currentTimeMillis());
 		a1.setKeyGroup(KeyGroup.PRIMARY_KEY);
 		a1.setId(String.valueOf(System.currentTimeMillis()));
 		m1.setAttributes(Arrays.asList(a1));
 		
-		BasicRelationship relation = RelationshipUtils.assignRelationship(m1, m2, a1);
+		Relationship relation = RelationshipUtils.assignRelationship(m1, m2, a1);
 		assertNotNull(m2.getAttributes());
 		//создать метод assertAttributes в базовом классе. и базовый класс тоже создать
 		assertEquals(m2.getAttributes().get(0).getAttributeType(), a1.getAttributeType());
@@ -42,19 +41,19 @@ public class RelationshipTest {
 	
 	@Test
 	public void testRelationshipDropping() {
-		BasicEntity m1 = new BasicEntity();
+		Entity m1 = new Entity();
 		m1.setName("m1");
-		BasicEntity m2 = new BasicEntity();
+		Entity m2 = new Entity();
 		m2.setName("m2");
 		
-		BasicAttribute a1 = new BasicAttribute();
+		Attribute a1 = new Attribute();
 		a1.setAttributeType(AttributeTypes.CLOB);
 		a1.setDefinition("test attr" + System.currentTimeMillis());
 		a1.setKeyGroup(KeyGroup.PRIMARY_KEY);
 		a1.setId(String.valueOf(System.currentTimeMillis()));
 		m1.setAttributes(Arrays.asList(a1));
 		
-		BasicRelationship relation = RelationshipUtils.assignRelationship(m1, m2, a1);
+		Relationship relation = RelationshipUtils.assignRelationship(m1, m2, a1);
 		assertNotNull(relation);
 		assertNotNull(m2.attributes);
 		assertEquals(m2.attributes.size(), 1);

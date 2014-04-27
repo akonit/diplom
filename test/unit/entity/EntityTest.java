@@ -1,30 +1,29 @@
-package lowmodel.entity;
+package entity;
 
 import java.util.Arrays;
 
-import lowmodel.entity.BasicEntity;
-import lowmodel.attribute.BasicAttribute;
-import lowmodel.attribute.KeyGroup;
-import lowmodel.attribute.type.AttributeTypes;
-
 import org.junit.Test;
 
+import attribute.AttributeTypes;
+import attribute.Attribute;
+import attribute.KeyGroup;
+import entity.Entity;
 import static org.junit.Assert.*;
 
 public class EntityTest {
 
 	@Test
 	public void testEntityCreation() throws Exception {
-		BasicEntity entity = new BasicEntity();
+		Entity entity = new Entity();
 		entity.setName("newEntity");
 		
-		BasicAttribute battr1 = new BasicAttribute();
+		Attribute battr1 = new Attribute();
 		battr1.setAttributeType(AttributeTypes.VARCHAR);
 		battr1.setDefinition("attr1");
 		battr1.setKeyGroup(KeyGroup.PRIMARY_KEY);
 		battr1.setId(String.valueOf(System.currentTimeMillis()));
 
-		BasicAttribute battr2 = new BasicAttribute();
+		Attribute battr2 = new Attribute();
 		battr2.setAttributeType(AttributeTypes.TIMESTAMP);
 		battr2.setDefinition("attr2");
 		battr2.setKeyGroup(KeyGroup.FOREIGN_KEY);

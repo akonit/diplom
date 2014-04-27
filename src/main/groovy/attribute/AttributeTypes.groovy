@@ -1,8 +1,8 @@
-package lowmodel.attribute.type;
+package attribute;
 
 import java.util.List;
-
-import lowmodel.database.Databases;
+import sql.Database
+import static sql.Database.*
 
 /**
  * Конкретизированные типы атрибутов. Используются при генерации схемы БД (в отличие от групп
@@ -11,30 +11,31 @@ import lowmodel.database.Databases;
 public enum AttributeTypes {
 	
 	//string attributes
-	CHAR ("CHAR", Databases.ORACLE, false),
-	CHAR_CLAUSE ("CHAR()", Databases.ORACLE, true),
-	NCHAR("NCHAR", Databases.ORACLE, false),
-	NCHAR_CLAUSE("NCHAR()", Databases.ORACLE, true),
-	VARCHAR("VARCHAR()", Databases.ORACLE, true),
-	NVARCHAR("NVARCHAR()", Databases.ORACLE, true),
+	CHAR ("CHAR", Arrays.asList(ORACLE, MY_SQL), false),
+	CHAR_CLAUSE ("CHAR()", Arrays.asList(ORACLE, MY_SQL), true),
+	NCHAR("NCHAR", Arrays.asList(ORACLE, MY_SQL), false),
+	NCHAR_CLAUSE("NCHAR()", Arrays.asList(ORACLE, MY_SQL), true),
+	VARCHAR("VARCHAR()", Arrays.asList(ORACLE, MY_SQL), true),
+	NVARCHAR("NVARCHAR()", Arrays.asList(ORACLE, MY_SQL), true),
 	
 	//database attributes
-	DATE ("DATE", Databases.ORACLE, false),
-	TIMESTAMP ("TIMESTAMP", Databases.ORACLE, false),
-	TIMESTAMP_CLAUSE ("TIMESTAMP()", Databases.ORACLE, true),
+	DATE ("DATE", Arrays.asList(ORACLE, MY_SQL), false),
+	TIMESTAMP ("TIMESTAMP", Arrays.asList(ORACLE, MY_SQL), false),
+	TIMESTAMP_CLAUSE ("TIMESTAMP()", Arrays.asList(ORACLE, MY_SQL), true),
 	
 	// binary attributes
-	CLOB("CLOB", Databases.ORACLE, false);
+	CLOB("CLOB", Arrays.asList(ORACLE, MY_SQL), false);
 	
 	/**
-	 * Название группы атрибута для представления.
+	 * Название атрибута для отображения пользователю.
 	 */
 	private String name;
 	
 	/**
-	 * БД, в которой есть такой тип атрибута. мб сделать список, мб захардкодить повторения
+	 * Список БД, в которых есть такой тип атрибута.
 	 */
-	private Databases database;
+	//проверить на адекватность!
+	private List<Database> databases;
 	
 	/**
 	 * Можно указать размер атрибута (длину слова например).
@@ -42,9 +43,9 @@ public enum AttributeTypes {
 	private boolean modifyable;
 	
 	
-	private AttributeTypes(String name, Databases database, boolean modifyable) {
+	private AttributeTypes(String name, List<Database> databases, boolean modifyable) {
 		this.name = name;
-		this.database = database;
+		this.databases = databases;
 		this.modifyable = modifyable;
 	}
 	
@@ -74,8 +75,8 @@ public enum AttributeTypes {
 	}
 
 	@Override
-	public Databases getDatabase() {
-		return database;
+	public List<Database> getDatabases() {
+		return databases;
 	}
 
 	@Override

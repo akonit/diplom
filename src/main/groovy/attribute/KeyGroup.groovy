@@ -1,4 +1,4 @@
-package lowmodel.attribute
+package attribute
 
 public enum KeyGroup {
 	PRIMARY_KEY, 

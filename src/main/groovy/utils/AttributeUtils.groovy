@@ -1,6 +1,7 @@
 package utils;
 
-import lowmodel.attribute.BasicAttribute
+import attribute.AttributeTypes;
+import attribute.Attribute;
 import lowmodel.attribute.type.*
 
 final class AttributeUtils {
@@ -14,7 +15,7 @@ final class AttributeUtils {
 	 * @param attr атрибут
 	 * @param subTypeName имя назначаемого типа
 	 */
-	public static void signTypeToAttr(BasicAttribute attr, String typeName) {
+	public static void signTypeToAttr(Attribute attr, String typeName) {
 		attr.activeAttributeType = typeName;
 		attr.attributeType =  AttributeTypes.getByName(typeName);
 	}

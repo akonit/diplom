@@ -1,13 +1,13 @@
-package lowmodel.entity;
+package entity;
 
 import java.util.List;
 
-import lowmodel.attribute.BasicAttribute;
+import attribute.Attribute;
 
 /**
  * Таблица БД.
  */
-public class BasicEntity {
+public class Entity {
 
 	/**
 	 * Название таблицы.
@@ -17,13 +17,13 @@ public class BasicEntity {
 	/**
 	 * Список атрибутов таблицы.
 	 */
-	private List<BasicAttribute> attributes;
+	private List<Attribute> attributes;
 
-	public List<BasicAttribute> getAttributes() {
+	public List<Attribute> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(List<BasicAttribute> attributes) {
+	public void setAttributes(List<Attribute> attributes) {
 		this.attributes = attributes;
 	}
 	

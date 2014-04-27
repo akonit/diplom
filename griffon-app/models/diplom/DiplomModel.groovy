@@ -1,12 +1,12 @@
 package diplom
 
+import relationship.Relationship;
+import entity.Entity;
 import groovy.beans.Bindable
-import lowmodel.entity.BasicEntity
-import lowmodel.relationship.BasicRelationship
 
 @Bindable
 class DiplomModel {
-	BasicEntity bentity;//назвать по-нормальному, и вообще тут коллекция.
-	BasicRelationship brelation;//аналогично.
+	Entity bentity;//назвать по-нормальному, и вообще тут коллекция.
+	Relationship brelation;//аналогично.
    // String propName
 }

@@ -2,10 +2,10 @@ package utils
 
 import org.apache.log4j.Logger;
 
-import lowmodel.attribute.BasicAttribute
-import lowmodel.entity.BasicEntity
-import lowmodel.relationship.BasicRelationship
-import lowmodel.attribute.KeyGroup;
+import attribute.Attribute;
+import attribute.KeyGroup;
+import relationship.Relationship;
+import entity.Entity;
 
 //заменить в логах definition атрибутов на name, когда оно появится
 final class RelationshipUtils {
@@ -25,11 +25,11 @@ final class RelationshipUtils {
 	 */
 	//посмотреть, какие связи помимо FK бывают, расширить метод при необходимости
 	//добавить валидацию на создание FK в зависимой таблице
-	public static BasicRelationship assignRelationship(BasicEntity fromEntity, 
-		BasicEntity toEntity, BasicAttribute fromAttr) {
-		BasicRelationship relationship = new BasicRelationship();
+	public static Relationship assignRelationship(Entity fromEntity, 
+		Entity toEntity, Attribute fromAttr) {
+		Relationship relationship = new Relationship();
 		
-		BasicAttribute toAttr = new BasicAttribute();
+		Attribute toAttr = new Attribute();
 		toAttr.attributeType = fromAttr.attributeType;
 		toAttr.definition = fromAttr.definition;
 		toAttr.keyGroup = KeyGroup.FOREIGN_KEY;
@@ -57,7 +57,7 @@ final class RelationshipUtils {
 	 * @param toEntity
 	 * @param fromAttr
 	 */
-	public static void dropRelationship(BasicEntity entity, BasicAttribute attr) {
+	public static void dropRelationship(Entity entity, Attribute attr) {
 			entity.attributes.remove(attr);
 			//валидация? 
 			log.info("dropRelationship - remove {" + attr.definition +"} from {" +
