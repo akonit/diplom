@@ -28,6 +28,11 @@ class Attribute implements LowModelApi, Serializable {
 	private String id;
 	
 	/**
+	 * Название атрибута.
+	 */
+	private String name;
+	
+	/**
 	 * Тип атрибута в бд.
 	 */
 	private AttributeTypes attributeType;
@@ -81,6 +86,14 @@ class Attribute implements LowModelApi, Serializable {
 	public void setAttributeType(AttributeTypes attributeType) {
 		this.attributeType = attributeType;
 	}
+	
+	public String getActiveAttributeType() {
+		return activeAttributeType;
+	}
+	
+	public void setActiveAttributeType(String activeAttributeType) {
+		this.activeAttributeType = activeAttributeType;
+	}
 
 	public String getDefinition() {
 		return definition;
@@ -96,5 +109,13 @@ class Attribute implements LowModelApi, Serializable {
 
 	public void setKeyGroup(KeyGroup keyGroup) {
 		this.keyGroup = keyGroup;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 }

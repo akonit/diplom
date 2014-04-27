@@ -8,15 +8,15 @@ public class ConnectionManager {
 	
 	static Logger log = Logger.getLogger(ConnectionManager.class.getName());
 
-	public Sql openAndGetConnection(String url, String user, String password, Database driver) {
+	public Sql openAndGetConnection(String url, String user, String password, Database database) {
 		try {
-			def sql = Sql.newInstance(url, user, password, driver.getName())
+			def sql = Sql.newInstance(url, user, password, database.getDriver())
 			log.info("openAndGetConnection: " + url + ", " + user + ", " + password + ",  "
-				+ driver.driver + " - ok");
+				+ database.driver + " - ok");
 			return sql
 		} catch (Exception e) {
 			log.error("openAndGetConnection: " + url + ", " + user + ", " + password + ",  "
-				+ driver.driver + " - fail, " + e);
+				+ database.driver + " - fail, " + e);
 			throw new RuntimeException("open connection - fail");
 		}
 	}

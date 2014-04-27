@@ -1,7 +1,5 @@
 package sql;
 
-import java.util.List;
-
 import groovy.sql.Sql;
 
 import org.junit.Ignore;
@@ -50,15 +48,5 @@ public class ConnectionManagerTest {
 		}
 		
 		assertFalse(isException);
-	}
-	
-	@Test
-	public void testDatabaseEnum() {
-		List<String> dbs = Database.getAllNames();
-		assertNotNull(dbs);
-		assertTrue(dbs.contains(Database.MY_SQL.getName()));
-		
-		Database mySql = Database.getByName(Database.MY_SQL.getName());
-		assertEquals(mySql, Database.MY_SQL);
 	}
 }

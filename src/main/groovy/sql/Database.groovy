@@ -2,8 +2,6 @@ package sql;import java.util.List;
 
 import attribute.AttributeTypes;
 
-
-
 public enum Database {
 
 	MY_SQL ("MySql", "com.mysql.jdbc.Driver"),
