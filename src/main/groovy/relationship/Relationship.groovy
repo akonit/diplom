@@ -5,36 +5,53 @@ import org.apache.log4j.Logger;
 import attribute.Attribute;
 import relationship.Relationship;
 import entity.Entity;
+import entity.Index
 
 /**
  * Связи между таблицами (FK). Создание предполагается через обращение к пакету utils.
  */
-//проверить на избыточность данных
-public class Relationship {
+public class Relationship implements Serializable {
 
 	static Logger log = Logger.getLogger(Relationship.class.getName());
 	
-	private Attribute fromAttr;
+	private Index index;
 	
-	private Attribute toAttr;
+	private List<Attribute> toAttr = new ArrayList<>();
 	
 	private Entity fromEntity;
 	
 	private Entity toEntity;
-
-	public Attribute getFromAttr() {
-		return fromAttr;
+	
+	public class Cardinality implements Serializable {
+		private boolean identifying;
+		
+		//enum type - нужно ли?
+		
+		public void setIdentifying(boolean identifying) {
+			this.identifying = identifying;
+			if (identifying) {
+				for (Attribute attr : toAttr) {
+					attr.getConstraints().setPrimary(true);
+				}
+			} else {
+				for (Attribute attr : toAttr) {
+					attr.getConstraints().setPrimary(false);
+				}
+			}
+		}
+		
+		public boolean isIdentifying() {
+			return identifying;
+		}
 	}
+	
+	private Cardinality cardinality = new Cardinality();
 
-	public void setFromAttr(Attribute fromAttr) {
-		this.fromAttr = fromAttr;
-	}
-
-	public Attribute getToAttr() {
+	public List<Attribute> getToAttr() {
 		return toAttr;
 	}
 
-	public void setToAttr(Attribute toAttr) {
+	public void setToAttr(List<Attribute> toAttr) {
 		this.toAttr = toAttr;
 	}
 
@@ -54,4 +71,19 @@ public class Relationship {
 		this.toEntity = toEntity;
 	}
 	
+	public void setCardinality(Cardinality cardinality) {
+		this.cardinality = cardinality;
+	}
+	
+	public Cardinality getCardinality() {
+		return cardinality;
+	}
+	
+	public void setIndex(Index index) {
+		this.index = index;
+	}
+	
+	public Index getIndex() {
+		return index;
+	}
 }

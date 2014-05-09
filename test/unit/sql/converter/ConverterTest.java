@@ -1,5 +1,6 @@
 package sql.converter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import static org.junit.Assert.*;
 import relationship.Relationship;
 import sql.ConnectionManager;
 import sql.Database;
+import utils.RelationshipUtils;
 import entity.Entity;
+import entity.Index;
 import groovy.sql.Sql;
 
 public class ConverterTest {
@@ -33,7 +36,6 @@ public class ConverterTest {
 	@Test
 	public void testMySqlConverter() throws Exception {
 		ConverterCommander cc = new ConverterCommander();
-		List<Relationship> relations = Arrays.asList();
 		
 		Entity entity1 = new Entity();
 		entity1.setName("entity_1_" + System.currentTimeMillis());
@@ -43,7 +45,11 @@ public class ConverterTest {
 		attr1.setDefinition("тестовый атрибут");
 		attr1.setId(String.valueOf(System.currentTimeMillis()));
 		attr1.setActiveAttributeType(attr1.getAttributeType().getName());
-		entity1.setAttributes(Arrays.asList(attr1));
+		attr1.getConstraints().setNullable(false);
+		attr1.getConstraints().setPrimary(true);
+		List<Attribute> attrs = new ArrayList<>();
+		attrs.add(attr1);
+		entity1.setAttributes(attrs);
 
 		Entity entity2 = new Entity();
 		entity2.setName("entity_2_" + System.currentTimeMillis());
@@ -53,13 +59,24 @@ public class ConverterTest {
 		attr2.setDefinition("тестовый атрибут");
 		attr2.setId(String.valueOf(System.currentTimeMillis()));
 		attr2.setActiveAttributeType(attr2.getAttributeType().getName());
+		attr2.getConstraints().setUnique(true);
 		Attribute attr3 = new Attribute();
 		attr3.setAttributeType(AttributeTypes.VARCHAR);
 		attr3.setName("testChar");
 		attr3.setDefinition("тестовый атрибут");
 		attr3.setId(String.valueOf(System.currentTimeMillis()));
 		attr3.setActiveAttributeType("VARCHAR(64)");		
+		attr3.getConstraints().setUnique(true);
 		entity2.setAttributes(Arrays.asList(attr2, attr3));
+		
+		Index i = new Index();
+		i.setName("testIndex");
+		entity2.getIndexes().add(i);
+		i.addAttribute(attr2);
+		i.addAttribute(attr3);
+		
+		Relationship r1 = RelationshipUtils.assignRelationship(entity2, entity1, i, true);
+		List<Relationship> relations = Arrays.asList(r1);
 		
 		List<Entity> entities = Arrays.asList(entity1, entity2);
 		String sqlScript = cc.convertToSql(Database.MY_SQL, entities, relations);
@@ -69,8 +86,7 @@ public class ConverterTest {
 		
 		/*
 		 * Проверка наката полученного скрипта на примере конкретной БД. тест валидный, 
-		 * настройки подключения подставлять свои.
-		 
+		 * настройки подключения подставлять свои.	
 		String url = "jdbc:mysql://localhost/PRODUCTS";
 		String user = "root";
 		String password = "password";
@@ -80,7 +96,7 @@ public class ConverterTest {
 		for (String statement : statements) {
 			sql.execute(statement.concat(";"));
 		}
-		cm.closeConnection(sql);
-		*/
+		cm.closeConnection(sql);	
+		 */
 	}
 }

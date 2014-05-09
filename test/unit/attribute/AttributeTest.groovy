@@ -6,7 +6,6 @@ import org.junit.Test
 
 import attribute.AttributeTypes;
 import attribute.Attribute;
-import attribute.KeyGroup;
 import static org.junit.Assert.*;
 
 //выделить как минимум assert в базовый класс
@@ -20,7 +19,6 @@ class AttributeTest {
 		def Attribute battr = new Attribute();
 		battr.attributeType = AttributeTypes.CLOB;
 		battr.definition = "test attr";
-		battr.keyGroup = KeyGroup.PRIMARY_KEY;
 		battr.id = String.valueOf(System.currentTimeMillis());
 		
 		//в файл
@@ -36,7 +34,6 @@ class AttributeTest {
 		assertEquals(battr.id, ((Attribute) newBattr).id);
 		assertEquals(battr.definition, ((Attribute) newBattr).definition);
 		assertEquals(battr.attributeType, ((Attribute) newBattr).attributeType);
-		assertEquals(battr.keyGroup, ((Attribute) newBattr).keyGroup);
 	}
 	
 	/**

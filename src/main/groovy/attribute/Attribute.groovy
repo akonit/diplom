@@ -4,6 +4,7 @@ import lowmodel.attribute.type.*;
 
 import org.apache.log4j.Logger;
 
+import entity.Index
 import interfaces.LowModelApi;
 
 /**
@@ -21,10 +22,6 @@ class Attribute implements LowModelApi, Serializable {
 	
 	static Logger log = Logger.getLogger(Attribute.class.getName());
 	
-	//может ли один атрибут иметь несколько групп?
-	
-	private KeyGroup keyGroup;//список?
-
 	private String id;
 	
 	/**
@@ -53,6 +50,61 @@ class Attribute implements LowModelApi, Serializable {
 	 */
 	private String note;
 	
+	private List<Index> indexes;
+	
+	/**
+	 * Ограничения, накладываемые на атрибуты.
+	 */
+	public class Constraints implements Serializable {
+		private boolean nullable = true;
+		
+		private boolean unique = false;
+		
+		private boolean primary = false;
+		
+		//скорее всего, лишнее, если только декоративные функции
+		private boolean foreign = false;
+		
+		public void setNullable(boolean nullable) {
+			this.nullable = nullable;
+		}
+		
+		public boolean isNullable() {
+			return nullable;
+		}
+		
+		public void setUnique(boolean unique) {
+			this.unique = unique;
+		}
+		
+		public boolean isUnique() {
+			return unique;
+		}
+		
+		public void setPrimary(boolean primary) {
+			this.primary = primary;
+		}
+		
+		public boolean isPrimary() {
+			return primary;
+		}
+		
+		public void setForeign(boolean foreign) {
+			this.foreign = foreign;
+		}
+		
+		public boolean isForeign() {
+			return foreign;
+		}
+	}
+	
+	private Constraints constraints;
+	
+	public Attribute() {
+		constraints = new Constraints();
+		indexes = new ArrayList<>();
+	}
+	
 	//вынести в контроллер?
 	/**
 	 * Установка пользовательского типа атрибута
@@ -68,6 +120,18 @@ class Attribute implements LowModelApi, Serializable {
 		    log.error("changeAttrType {" + newTypeName + "} - failed, not modifyable type");
 			return false;
 		}
+	}
+	
+	public void addToIndex(Index index) {
+		if (!indexes.contains(index)) {
+			indexes.add(index);
+			index.attributes.add(this);
+		}
+	}
+	
+	public void removeFromIndex(Index index) {
+		indexes.remove(index);
+		index.attributes.remove(this)
 	}
 	
 	@Override
@@ -102,14 +166,6 @@ class Attribute implements LowModelApi, Serializable {
 	public void setDefinition(String definition) {
 		this.definition = definition;
 	}
-
-	public KeyGroup getKeyGroup() {
-		return keyGroup;
-	}
-
-	public void setKeyGroup(KeyGroup keyGroup) {
-		this.keyGroup = keyGroup;
-	}
 	
 	public String getName() {
 		return name;
@@ -117,5 +173,21 @@ class Attribute implements LowModelApi, Serializable {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setConstraints(Constraints constraints) {
+		this.constraints = constraints;
+	}
+	
+	public Constraints getConstraints() {
+		return constraints;
+	}
+	
+	public List<Index> getIndexes() {
+		return indexes;
+	}
+	
+	public void setIndexes(List<Index> indexes) {
+		this.indexes = indexes;
 	}
 }
