@@ -1,5 +1,7 @@
 package sql;
 
+import javax.sql.DataSource;
+
 import groovy.sql.Sql
 
 import org.apache.log4j.Logger
@@ -10,7 +12,7 @@ public class ConnectionManager {
 
 	public static Sql openAndGetConnection(String url, String user, String password, Database database) {
 		try {
-			def sql = Sql.newInstance(url, user, password, database.getDriver())
+			def sql = new Sql(Sql.newInstance(url, user, password, database.getDriver()).getConnection())
 			log.info("openAndGetConnection: " + url + ", " + user + ", " + password + ",  "
 				+ database.driver + " - ok");
 			return sql
@@ -23,7 +25,7 @@ public class ConnectionManager {
 
 	public static Sql openAndGetConnection(String url, Database database) {
 		try {
-			def sql = Sql.newInstance(url, database.getDriver())
+			def sql = new Sql(Sql.newInstance(url, database.getDriver()).getConnection())
 			log.info("openAndGetConnection: " + url + ",  " + database.driver + " - ok");
 			return sql
 		} catch (Exception e) {

@@ -26,6 +26,7 @@ final class AttributeUtils {
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
 			log.error("createAttribute [" + attr.name + "] -> failed", e)
+			throw new RuntimeException("failed to create attribute");
 		}
 	}
 	

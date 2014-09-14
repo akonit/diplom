@@ -26,6 +26,7 @@ class AttributeTest {
 		
 		def Attribute battr = new Attribute();
 		battr.attributeType = AttributeTypes.CLOB;
+		battr.activeAttributeType = AttributeTypes.CLOB;
 		battr.definition = "test attr";
 		battr.id = System.currentTimeMillis();
 		battr.name = "test attr name"
@@ -33,6 +34,79 @@ class AttributeTest {
 		AttributeUtils.createAttribute(battr, entity.getId())
 		def row = adUtils.getConnection().firstRow("select * from app_attribute")
 		assertEquals(battr.getName(), row.name)
+		
+		adUtils.exitApplication();
+	}
+
+	// создали таблицу - не смогли создать атрибут - ничего не сохранилось
+	@Test
+	public void testFailedToSaveAttributeToFile() {
+		UserDataUtils adUtils = new UserDataUtils();
+		String name = "myNewDb" + System.currentTimeMillis();
+		adUtils.createNewFile(name);
+		
+		Entity entity = new Entity();
+		entity.setName("newEntity");
+		entity.setCommentary("test");
+		
+		EntityUtils.createEntity(entity);
+		
+		def Attribute battr = new Attribute();
+		battr.attributeType = AttributeTypes.CLOB;
+		battr.definition = "test attr";
+		battr.id = System.currentTimeMillis();
+		battr.name = null//constraint - name is not null
+		
+		boolean isException = false
+		try {
+		    AttributeUtils.createAttribute(battr, entity.getId())
+		} catch (Exception e) {
+		    isException = true
+		}
+		
+		assertTrue(isException)
+		def row = adUtils.getConnection().firstRow("select * from app_attribute")
+		assertNull(row)
+		
+		row = adUtils.getConnection().firstRow("select * from app_table")
+		assertNull(row)
+		
+		adUtils.exitApplication();
+	}
+
+	// создали таблицу - закоммитили - не смогли создать атрибут - таблица сохранилась
+	@Test
+	public void testFailedToSaveAttributeWithEntityCommitToFile() {
+		UserDataUtils adUtils = new UserDataUtils();
+		String name = "myNewDb" + System.currentTimeMillis();
+		adUtils.createNewFile(name);
+		
+		Entity entity = new Entity();
+		entity.setName("newEntity");
+		entity.setCommentary("test");
+		
+		EntityUtils.createEntity(entity);
+		adUtils.save()
+		
+		def Attribute battr = new Attribute();
+		battr.attributeType = AttributeTypes.CLOB;
+		battr.definition = "test attr";
+		battr.id = System.currentTimeMillis();
+		battr.name = null//constraint - name is not null
+		
+		boolean isException = false
+		try {
+		    AttributeUtils.createAttribute(battr, entity.getId())
+		} catch (Exception e) {
+		    isException = true
+		}
+		
+		assertTrue(isException)
+		def row = adUtils.getConnection().firstRow("select * from app_attribute")
+		assertNull(row)
+		
+		row = adUtils.getConnection().firstRow("select * from app_table")
+		assertEquals(entity.getName(), row.name)
 		
 		adUtils.exitApplication();
 	}

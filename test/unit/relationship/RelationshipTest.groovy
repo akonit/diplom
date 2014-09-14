@@ -33,6 +33,7 @@ public class RelationshipTest {
 		
 		Attribute a1 = new Attribute();
 		a1.setAttributeType(AttributeTypes.CLOB);
+		a1.setActiveAttributeType(AttributeTypes.CLOB.name);
 		a1.setDefinition("test attr" + System.currentTimeMillis());
 		a1.name = "a1"
 		a1.setId(System.currentTimeMillis());
@@ -74,6 +75,7 @@ public class RelationshipTest {
 		
 		Attribute a1 = new Attribute();
 		a1.setAttributeType(AttributeTypes.CLOB);
+		a1.setActiveAttributeType(AttributeTypes.CLOB.name);
 		a1.setDefinition("test attr" + System.currentTimeMillis());
 		a1.name = "a1"
 		a1.setId(System.currentTimeMillis());
@@ -81,6 +83,7 @@ public class RelationshipTest {
 		i.addAttribute(a1)
 		Attribute a2 = new Attribute();
 		a2.setAttributeType(AttributeTypes.CLOB);
+		a2.setActiveAttributeType(AttributeTypes.CLOB.name);
 		a2.setDefinition("test attr2" + System.currentTimeMillis());
 		a2.name = "a2"
 		a2.setId(System.currentTimeMillis());

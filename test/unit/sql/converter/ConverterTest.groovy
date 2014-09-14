@@ -46,6 +46,7 @@ public class ConverterTest {
 		EntityUtils.createEntity(entity1);
 		Attribute attr1 = new Attribute();
 		attr1.setAttributeType(AttributeTypes.DATE);
+		attr1.setActiveAttributeType(AttributeTypes.DATE.getName())
 		attr1.setName("testDate1");
 		attr1.setDefinition("тестовый атрибут");
 		attr1.setId(System.currentTimeMillis());
@@ -62,6 +63,7 @@ public class ConverterTest {
 		EntityUtils.createEntity(entity2);
 		Attribute attr2 = new Attribute();
 		attr2.setAttributeType(AttributeTypes.DATE);
+		attr2.setActiveAttributeType(AttributeTypes.DATE.getName())
 		attr2.setName("testDate2");
 		attr2.setDefinition("тестовый атрибут");
 		attr2.setId(System.currentTimeMillis());
