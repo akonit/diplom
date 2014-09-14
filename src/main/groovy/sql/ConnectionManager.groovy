@@ -8,7 +8,7 @@ public class ConnectionManager {
 	
 	static Logger log = Logger.getLogger(ConnectionManager.class.getName());
 
-	public Sql openAndGetConnection(String url, String user, String password, Database database) {
+	public static Sql openAndGetConnection(String url, String user, String password, Database database) {
 		try {
 			def sql = Sql.newInstance(url, user, password, database.getDriver())
 			log.info("openAndGetConnection: " + url + ", " + user + ", " + password + ",  "
@@ -20,8 +20,19 @@ public class ConnectionManager {
 			throw new RuntimeException("open connection - fail");
 		}
 	}
+
+	public static Sql openAndGetConnection(String url, Database database) {
+		try {
+			def sql = Sql.newInstance(url, database.getDriver())
+			log.info("openAndGetConnection: " + url + ",  " + database.driver + " - ok");
+			return sql
+		} catch (Exception e) {
+			log.error("openAndGetConnection: " + url + database.driver + " - fail, " + e);
+			throw new RuntimeException("open connection - fail");
+		}
+	}
 	
-	public void closeConnection(Sql connection) {
+	public static void closeConnection(Sql connection) {
 		try {
 			connection.close();
 			log.info("closeConnection - ok");

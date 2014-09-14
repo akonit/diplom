@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="griffon-app/conf"/>
+	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/groovy"/>
 	<classpathentry kind="src" path="griffon-app/controllers"/>
@@ -68,5 +69,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.6.jar"/>
 	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="lib/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="USER_HOME/.griffon/1.5.0/projects/diplom/classes/main"/>
 </classpath>

@@ -1,7 +1,5 @@
 package entity;
 
-import javax.smartcardio.ATR;
-
 import attribute.Attribute
 
 //предполагается использовать его для FK. мб что еще сюда добавить - on delete cascade и т д

@@ -19,3 +19,16 @@ diplom
   ```shell
   griffon test-app
   ```
+
+- *сейвы* -  лежат в папке saves в домашней директории проекта.
+
+Про накат схемы БД
+-------------
+
+Скрип для создания БД - create_db.sql лежит в корне проекта. Накат:
+
+   ```sql
+   sqlite3 base.db < create_db.sql
+   ```
+
+base.db искать в sr/main/resources.

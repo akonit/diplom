@@ -5,7 +5,8 @@ import attribute.AttributeTypes;
 public enum Database {
 
 	MY_SQL ("MySql", "com.mysql.jdbc.Driver"),
-	ORACLE ("Oracle", "oracle.jdbc.pool.OracleDataSource");
+	ORACLE ("Oracle", "oracle.jdbc.pool.OracleDataSource"),
+	SQLITE("SqLite", "org.sqlite.JDBC");
 	
 	/**
 	 * Название базы данных для отображения пользователю.
