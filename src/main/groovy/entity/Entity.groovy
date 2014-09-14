@@ -8,11 +8,15 @@ import attribute.Attribute;
  * Таблица БД.
  */
 public class Entity {
+	
+	private long id
 
 	/**
 	 * Название таблицы.
 	 */
 	private String name;
+	
+	private String commentary
 	
 	/**
 	 * Список атрибутов таблицы.
@@ -46,5 +50,21 @@ public class Entity {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public void setCommentary(String commentary) {
+		this.commentary = commentary
+	}
+	
+	public String getCommentary() {
+		return commentary
+	}
+	
+	public void setId(long id) {
+		this.id = id
+	}
+	
+	public long getId() {
+		return id
 	}
 }

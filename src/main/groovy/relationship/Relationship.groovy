@@ -14,6 +14,8 @@ public class Relationship implements Serializable {
 
 	static Logger log = Logger.getLogger(Relationship.class.getName());
 	
+	private long id
+	
 	private Index index;
 	
 	private List<Attribute> toAttr = new ArrayList<>();

@@ -13,7 +13,7 @@ public class UserDataUtils {
 	
 	static Logger log = Logger.getLogger(UserDataUtils.class.getName())
 	
-	private Sql connection
+	private static Sql connection
 
 	/**
 	 * Создаст новый .db файл.
@@ -28,9 +28,17 @@ public class UserDataUtils {
 		    log.error("createNewFile [" + name + "] -> error", e)
 		}
 
+		openFile(name)
+	}
+	
+	/**
+	 * Откроет существующий .db файл.
+	 */
+	public void openFile(String name) {
 		String url = "jdbc:sqlite:saves/" + name + ".db"
 		connection = ConnectionManager.openAndGetConnection(url, Database.SQLITE)
-		log.info("createNewFile [" + name + "] -> done")
+		connection.getConnection().setAutoCommit(false)
+		log.info("openFile [" + name + "] -> done")
 	}
 	
 	/**
@@ -38,5 +46,13 @@ public class UserDataUtils {
 	 */
 	public void exitApplication() {
 		ConnectionManager.closeConnection(connection)
+	}
+	
+	public static void save() {
+		connection.commit()
+	}
+	
+	public Sql getConnection() {
+		return connection
 	}
 }

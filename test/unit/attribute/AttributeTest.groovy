@@ -6,34 +6,35 @@ import org.junit.Test
 
 import attribute.AttributeTypes;
 import attribute.Attribute;
+import entity.Entity
 import static org.junit.Assert.*;
 
 //выделить как минимум assert в базовый класс
 class AttributeTest {
 
-	/**
-	 * Объект, записанный в файл, совпадает с объектом, прочитанным из файла.
-	 */
 	@Test
-	public void testSerialization() {
+	public void testSaveAttributeToFile() {
+		UserDataUtils adUtils = new UserDataUtils();
+		String name = "myNewDb" + System.currentTimeMillis();
+		adUtils.createNewFile(name);
+		
+		Entity entity = new Entity();
+		entity.setName("newEntity");
+		entity.setCommentary("test");
+		
+		EntityUtils.createEntity(entity);
+		
 		def Attribute battr = new Attribute();
 		battr.attributeType = AttributeTypes.CLOB;
 		battr.definition = "test attr";
-		battr.id = String.valueOf(System.currentTimeMillis());
+		battr.id = System.currentTimeMillis();
+		battr.name = "test attr name"
 		
-		//в файл
-		def out= new ObjectOutputStream(new FileOutputStream('save'))
-		out.writeObject(battr)
-		out.close()
+		AttributeUtils.createAttribute(battr, entity.getId())
+		def row = adUtils.getConnection().firstRow("select * from app_attribute")
+		assertEquals(battr.getName(), row.name)
 		
-		//из файла
-		def inp= new ObjectInputStream(new FileInputStream('save'))
-		def newBattr= inp.readObject()
-		inp.close()
-		
-		assertEquals(battr.id, ((Attribute) newBattr).id);
-		assertEquals(battr.definition, ((Attribute) newBattr).definition);
-		assertEquals(battr.attributeType, ((Attribute) newBattr).attributeType);
+		adUtils.exitApplication();
 	}
 	
 	/**

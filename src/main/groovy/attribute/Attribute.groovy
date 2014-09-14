@@ -22,7 +22,7 @@ class Attribute implements LowModelApi, Serializable {
 	
 	static Logger log = Logger.getLogger(Attribute.class.getName());
 	
-	private String id;
+	private long id;
 	
 	/**
 	 * Название атрибута.
@@ -48,7 +48,7 @@ class Attribute implements LowModelApi, Serializable {
 	/**
 	 * Заметки
 	 */
-	private String note;
+	private String commentary;
 	
 	private List<Index> indexes;
 	
@@ -139,7 +139,7 @@ class Attribute implements LowModelApi, Serializable {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

@@ -16,6 +16,30 @@ final class RelationshipUtils {
 	}
 	
 	/**
+	 * Запись в файл.
+	 * @param newAttrs - атрибуты, созданные после добавления связи.
+	 */
+	public static void createRelationship(Relationship rel, List<Attribute> newAttrs) {
+		try {
+			rel.id = System.currentTimeMillis()
+			int identify = rel.cardinality.identifying ? 1 : 0
+			UserDataUtils.connection.execute("insert into app_relation(id, table_from_id, table_to_id, identify) values(?, ?, ?, ?)",
+				[rel.id, rel.fromEntity.id, rel.toEntity.id, identify])
+			
+			if (newAttrs != null & !newAttrs.isEmpty()) {
+				for (Attribute attr : newAttrs) {
+					UserDataUtils.connection.execute("insert into relation_to_attr(relation_id, attribute_id) values(?, ?)",
+						[rel.id, attr.id])
+				}
+			}
+		} catch (Exception e) {
+			UserDataUtils.connection.rollback()
+			log.error("createRelationship from " + rel.fromEntity.name + "to " + rel.toEntity.name + " -> failed", e)
+		}
+	}
+	
+	//NB: вызывает запись в файл.
+	/**
 	 * Создание связей между таблицами. Вызывается из контроллера
 	 * @param fromEntity родительская таблица.
 	 * @param toEntity дочерняя таблица.
@@ -29,7 +53,9 @@ final class RelationshipUtils {
 		relationship.setIndex(index);
         relationship.setFromEntity(fromEntity);
 		relationship.setToEntity(toEntity);
+		relationship.cardinality.identifying = identifying
 
+		List newAttrs = new ArrayList<>()
 		for(Attribute fromAttr : index.attributes) {
 			Attribute toAttr = new Attribute();
 			toAttr.attributeType = fromAttr.attributeType;
@@ -41,8 +67,10 @@ final class RelationshipUtils {
 				toAttr.getConstraints().setPrimary(true);
 				relationship.cardinality.identifying = true;
 			}
-			toAttr.id = String.valueOf(System.currentTimeMillis());//заменить на UUID? или и так сойдет
+			toAttr.id = System.currentTimeMillis();
 			relationship.getToAttr().add(toAttr);
+			newAttrs.add(toAttr)
+			AttributeUtils.createAttribute(toAttr, toEntity.id)
 
 			if(toEntity.attributes == null) {
 				toEntity.attributes = new ArrayList<>();
@@ -52,6 +80,8 @@ final class RelationshipUtils {
 			log.info("assignRelationship - from {" + fromEntity.name + "} to {" + toEntity.name +
 					"} attribute {" + toAttr.name + "} by {" + index.name + "}");
 		}
+	    createRelationship(relationship, newAttrs)
+		
 		return relationship;//добавить результат на модель в список связей
 	}
 		
