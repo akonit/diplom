@@ -37,6 +37,7 @@ public class UserDataUtils {
 	public void openFile(String name) {
 		String url = "jdbc:sqlite:saves/" + name + ".db"
 		connection = ConnectionManager.openAndGetConnection(url, Database.SQLITE)
+		connection.execute("PRAGMA foreign_keys = ON")
 		connection.getConnection().setAutoCommit(false)
 		log.info("openFile [" + name + "] -> done")
 	}

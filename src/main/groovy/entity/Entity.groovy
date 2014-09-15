@@ -14,42 +14,42 @@ public class Entity {
 	/**
 	 * Название таблицы.
 	 */
-	private String name;
+	private String name
 	
 	private String commentary
 	
 	/**
 	 * Список атрибутов таблицы.
 	 */
-	private List<Attribute> attributes = new ArrayList<>();
+	private List<Attribute> attributes = new ArrayList<>()
 	
 	/**
 	 * Список всех индексов таблицы. 
 	 */
-	private List<Index> indexes = new ArrayList<>();
+	private List<Index> indexes = new ArrayList<>()
 
 	public List<Attribute> getAttributes() {
-		return attributes;
+		return attributes
 	}
 
 	public void setAttributes(List<Attribute> attributes) {
-		this.attributes = attributes;
+		this.attributes = attributes
 	}
 	
 	public List<Index> getIndexes() {
-		return indexes;
+		return indexes
 	}
 	
 	public void setIndexes(List<Index> indexes) {
-		this.indexes = indexes;
+		this.indexes = indexes
 	}
 	
 	public void setName(String name) {
-		this.name = name;
+		this.name = name
 	}
 	
 	public String getName() {
-		return name;
+		return name
 	}
 	
 	public void setCommentary(String commentary) {

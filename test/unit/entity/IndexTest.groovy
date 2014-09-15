@@ -1,9 +1,7 @@
-package relationship
-
-import java.util.Arrays
+package entity
 
 import org.junit.Test
-
+import utils.UserDataUtils
 import attribute.AttributeTypes
 import attribute.Attribute
 import relationship.Relationship
@@ -12,52 +10,12 @@ import entity.Index
 import static org.junit.Assert.*
 import utils.*
 
-public class RelationshipTest {
-
-	@Test
-	public void testRelationshipCreation() {
-		UserDataUtils adUtils = new UserDataUtils()
-		String name = "myNewDb" + System.currentTimeMillis()
-		adUtils.createNewFile(name)
-		
-		Entity m1 = new Entity()
-		m1.setName("m1")
-		EntityUtils.createEntity(m1)
-		Index i = new Index()
-		i.name = "testIndex"
-		m1.indexes.add(i)
-		Entity m2 = new Entity()
-		m2.setName("m2")
-		EntityUtils.createEntity(m2)
-		
-		Attribute a1 = new Attribute()
-		a1.setAttributeType(AttributeTypes.CLOB)
-		a1.setActiveAttributeType(AttributeTypes.CLOB.name)
-		a1.setDefinition("test attr" + System.currentTimeMillis())
-		a1.name = "a1"
-		a1.setId(System.currentTimeMillis())
-		AttributeUtils.createAttribute(a1, m1.getId())
-		m1.setAttributes(Arrays.asList(a1));
-		i.addAttribute(a1)
-		IndexUtils.createIndex(i, m1.getId())
-		
-		Relationship relation = RelationshipUtils.assignRelationship(m1, m2, i, false);
-		assertNotNull(m2.getAttributes())
-		//создать метод assertAttributes в базовом классе. и базовый класс тоже создать
-		assertEquals(m2.getAttributes().get(0).getAttributeType(), a1.getAttributeType())
-		assertEquals(m2.getAttributes().get(0).getDefinition(), a1.getDefinition())
-		assertTrue(m2.getAttributes().get(0).getConstraints().isForeign())
-		
-		assertTrue(relation.getToAttr().contains(m2.getAttributes().get(0)))
-		
-		def row = adUtils.getConnection().firstRow("select * from app_relation")
-		assertEquals(m1.getId(), row.table_from_id)
-		assertEquals(m2.getId(), row.table_to_id)
-		adUtils.exitApplication()
-	}
+public class IndexTest {
 	
+	//проверяется каскадное удаление атрибутов и связей, завязанных на индекс.
+	//удаление из оперативной памяти здесь не происходит
 	@Test
-	public void testRelationshipDropping() {
+	public void testSaveDeleteIndex() {
 		UserDataUtils adUtils = new UserDataUtils()
 		String name = "myNewDb" + System.currentTimeMillis()
 		adUtils.createNewFile(name)
@@ -103,19 +61,24 @@ public class RelationshipTest {
 		
 		row = adUtils.getConnection().firstRow("select * from relation_to_attr")
 		assertEquals(relation.id, row.relation_id)
+		
+		row = adUtils.getConnection().firstRow("select * from app_index")
+		assertEquals(i.id, row.id)
 			
 		def rows = adUtils.getConnection().rows("select * from app_attribute"
 			+ " where table_id = ?", [m2.id])
 		assertEquals(2, rows.size())
 		
-		//drop it
-		RelationshipUtils.dropRelationship(m2, relation)
-		assertTrue(m2.attributes.empty)
+		//delete index
+		IndexUtils.deleteIndex(i.id)
 		
 		row = adUtils.getConnection().firstRow("select * from app_relation")
 		assertNull(row)
 		
 		row = adUtils.getConnection().firstRow("select * from relation_to_attr")
+		assertNull(row)
+		
+		row = adUtils.getConnection().firstRow("select * from app_index")
 		assertNull(row)
 		
 		rows = adUtils.getConnection().rows("select * from app_attribute"

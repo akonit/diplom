@@ -1,11 +1,10 @@
 package attribute
 
-import lowmodel.attribute.type.*;
+import lowmodel.attribute.type.*
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Logger
 
 import entity.Index
-import interfaces.LowModelApi;
 
 /**
  * Базовое поле таблицы - pk, fk, просто атрибут.
@@ -18,91 +17,91 @@ import interfaces.LowModelApi;
 //добавить билдер
 //добавить имя атрибута - его в лог и на отображение в таблице. чтобы
 //было что то вроде "String (FK)"
-class Attribute implements LowModelApi, Serializable {
+class Attribute implements Serializable {
 	
 	static Logger log = Logger.getLogger(Attribute.class.getName());
 	
-	private long id;
+	private long id
 	
 	/**
 	 * Название атрибута.
 	 */
-	private String name;
+	private String name
 	
 	/**
 	 * Тип атрибута в бд.
 	 */
-	private AttributeTypes attributeType;
+	private AttributeTypes attributeType
 	
 	/**
 	 * Кастомный тип атрибута. varchar(20) например. на форме предполагается отображать
 	 * и изменять именно его
 	 */
-	private String activeAttributeType;
+	private String activeAttributeType
 	
 	/**
 	 * описание атрибута
 	 */
-	private String definition;
+	private String definition
 	
 	/**
 	 * Заметки
 	 */
-	private String commentary;
+	private String commentary
 	
-	private List<Index> indexes;
+	private List<Index> indexes
 	
 	/**
 	 * Ограничения, накладываемые на атрибуты.
 	 */
 	public class Constraints implements Serializable {
-		private boolean nullable = true;
+		private boolean nullable = true
 		
-		private boolean unique = false;
+		private boolean unique = false
 		
-		private boolean primary = false;
+		private boolean primary = false
 		
 		//скорее всего, лишнее, если только декоративные функции
-		private boolean foreign = false;
+		private boolean foreign = false
 		
 		public void setNullable(boolean nullable) {
-			this.nullable = nullable;
+			this.nullable = nullable
 		}
 		
 		public boolean isNullable() {
-			return nullable;
+			return nullable
 		}
 		
 		public void setUnique(boolean unique) {
-			this.unique = unique;
+			this.unique = unique
 		}
 		
 		public boolean isUnique() {
-			return unique;
+			return unique
 		}
 		
 		public void setPrimary(boolean primary) {
-			this.primary = primary;
+			this.primary = primary
 		}
 		
 		public boolean isPrimary() {
-			return primary;
+			return primary
 		}
 		
 		public void setForeign(boolean foreign) {
-			this.foreign = foreign;
+			this.foreign = foreign
 		}
 		
 		public boolean isForeign() {
-			return foreign;
+			return foreign
 		}
 	}
 	
-	private Constraints constraints;
+	private Constraints constraints
 	
 	public Attribute() {
-		constraints = new Constraints();
-		indexes = new ArrayList<>();
+		constraints = new Constraints()
+		indexes = new ArrayList<>()
 	}
 	
 	//вынести в контроллер?
@@ -113,81 +112,80 @@ class Attribute implements LowModelApi, Serializable {
 	 */
 	public boolean changeSubAttrType(String newTypeName) {
 		if (attributeType.modifyable) {
-			activeAttributeType = newTypeName;
-		    log.debug("changeAttrType {" + newTypeName + "} - ok");
-			return true;
+			activeAttributeType = newTypeName
+		    log.debug("changeAttrType {" + newTypeName + "} - ok")
+			return true
 		} else {
-		    log.error("changeAttrType {" + newTypeName + "} - failed, not modifyable type");
-			return false;
+		    log.error("changeAttrType {" + newTypeName + "} - failed, not modifyable type")
+			return false
 		}
 	}
 	
 	public void addToIndex(Index index) {
 		if (!indexes.contains(index)) {
-			indexes.add(index);
-			index.attributes.add(this);
+			indexes.add(index)
+			index.attributes.add(this)
 		}
 	}
 	
 	public void removeFromIndex(Index index) {
-		indexes.remove(index);
+		indexes.remove(index)
 		index.attributes.remove(this)
 	}
 	
-	@Override
-	public String getId() {
-		return id;
+	public long getId() {
+		return id
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		this.id = id
 	}
 
 	public AttributeTypes getAttributeType() {
-		return attributeType;
+		return attributeType
 	}
 
 	public void setAttributeType(AttributeTypes attributeType) {
-		this.attributeType = attributeType;
+		this.attributeType = attributeType
 	}
 	
 	public String getActiveAttributeType() {
-		return activeAttributeType;
+		return activeAttributeType
 	}
 	
 	public void setActiveAttributeType(String activeAttributeType) {
-		this.activeAttributeType = activeAttributeType;
+		this.activeAttributeType = activeAttributeType
 	}
 
 	public String getDefinition() {
-		return definition;
+		return definition
 	}
 
 	public void setDefinition(String definition) {
-		this.definition = definition;
+		this.definition = definition
 	}
 	
 	public String getName() {
-		return name;
+		return name
 	}
 	
 	public void setName(String name) {
-		this.name = name;
+		this.name = name
 	}
 	
 	public void setConstraints(Constraints constraints) {
-		this.constraints = constraints;
+		this.constraints = constraints
 	}
 	
 	public Constraints getConstraints() {
-		return constraints;
+		return constraints
 	}
 	
 	public List<Index> getIndexes() {
-		return indexes;
+		return indexes
 	}
 	
 	public void setIndexes(List<Index> indexes) {
-		this.indexes = indexes;
+		this.indexes = indexes
 	}
 }
