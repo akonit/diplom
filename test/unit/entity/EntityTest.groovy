@@ -85,4 +85,57 @@ public class EntityTest {
 		
 		adUtils.exitApplication()
 	}
+	
+	@Test
+	public void testUndoRedoCreation() throws Exception {
+		String name = "myNewDb" + System.currentTimeMillis()
+		UserDataUtils.createNewFile(name);
+		
+		Entity entity = new Entity()
+		entity.setName("newEntity")
+		
+		// create
+		EntityUtils.createEntity(entity)
+		def row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertEquals(entity.getName(), row.name)
+
+		// undo create
+		UserDataUtils.undo()
+		row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertNull(row)
+		
+		//redo create
+		UserDataUtils.redo()
+		row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertEquals(entity.getName(), row.name)
+	}
+	
+	@Test
+	public void testUndoRedoDelete() throws Exception {
+		String name = "myNewDb" + System.currentTimeMillis()
+		UserDataUtils.createNewFile(name);
+		
+		Entity entity = new Entity()
+		entity.setName("newEntity")
+		
+		// create
+		EntityUtils.createEntity(entity)
+		def row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertEquals(entity.getName(), row.name)
+		
+		//delete
+		EntityUtils.deleteEntity(entity.id)
+		row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertNull(row)
+
+		// undo delete
+		UserDataUtils.undo()
+		row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertEquals(entity.getName(), row.name)
+		
+		//redo delete
+		UserDataUtils.redo()
+		row = UserDataUtils.getConnection().firstRow("select * from app_table")
+		assertNull(row)
+	}
 }

@@ -17,8 +17,17 @@ public final class EntityUtils {
 	public static void createEntity(Entity entity) {
 		try {
 			entity.id = System.currentTimeMillis()
-		    UserDataUtils.connection.execute("insert into app_table(id, name, commentary)" 
-				+ " values(?, ?, ?)", [entity.id, entity.name, entity.commentary])
+			Operation redo = new Operation(
+				"insert into app_table(id, name, commentary) values(?, ?, ?)", [
+						entity.id,
+						entity.name,
+						entity.commentary
+					])
+            Operation undo = new Operation("delete from app_table where id = ?", [entity.id])
+			OperationBlock ob = new OperationBlockBuilder().redo(redo).undo(undo).build()
+		    UserDataUtils.connection.execute(redo.command, redo.params)
+			UserDataUtils.undoStack.push(ob)
+			
 			log.info("createEntity [" + entity.name + "] -> done, " + entity.id)
 		} catch (Exception e) {
 		    UserDataUtils.connection.rollback()
@@ -32,7 +41,18 @@ public final class EntityUtils {
 	 */
 	public static void deleteEntity(long entityId) {
 		try {
-			UserDataUtils.connection.execute("delete from app_table where id = ?", [entityId])
+			def row = UserDataUtils.connection.firstRow("select * from app_table where id = ?", [entityId])
+			Operation redo = new Operation("delete from app_table where id = ?", [entityId])
+			Operation undo = new Operation("insert into app_table(id, name, commentary) values(?, ?, ?)", [
+				entityId,
+				row.name,
+				row.commentary
+			])
+			//добавить восстановление индексов, атрибутов, связей
+			OperationBlock ob = new OperationBlockBuilder().redo(redo).undo(undo).build()
+			UserDataUtils.connection.execute(redo.command, redo.params)
+			UserDataUtils.undoStack.push(ob)
+
 			log.info("deleteEntity [" + entityId + "] -> done")
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
