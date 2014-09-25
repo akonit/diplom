@@ -31,7 +31,7 @@ public class UserDataUtils {
 	 */
 	public static void createNewFile(String name) {
 		try {
-			InputStream is = this.getClass().getResourceAsStream("/base.db")
+			InputStream is = new FileInputStream("configuration/base.db")//ClassLoader.getSystemClassLoader().getSystemResourceAsStream("base.db")
 		    Files.copy(is, Paths.get("saves/" + name + ".db"))
 			is.close()
 			undoStack = new Stack<>()

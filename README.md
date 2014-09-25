@@ -31,4 +31,6 @@ diplom
    sqlite3 base.db < create_db.sql
    ```
 
-base.db искать в **src/main/resources**.
+base.db поместить в директорию **configuration**.
+
+Изменение скрипта предполагается производить в файле **diplom_repo.vpp**. Открыть это можно при помощи Visual Paradigm for UML, изменения в схеме экспортировать командой `Utilities -> Generate SQL`.

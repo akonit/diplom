@@ -1,35 +1,7 @@
-create table app_table(id integer primary key, 
-                       name text not null, 
-                       commentary text);
+CREATE TABLE app_table (id integer(10) NOT NULL, name varchar(255) NOT NULL, commentary varchar(255), PRIMARY KEY (id));
+CREATE TABLE app_attribute (id integer(10) NOT NULL, table_id integer(10) NOT NULL, name varchar(255) NOT NULL, type varchar(255) NOT NULL, definition varchar(255), commentary varchar(255), is_primary integer(10), is_nullable integer(10), is_unique integer(10), PRIMARY KEY (id), FOREIGN KEY(table_id) REFERENCES app_table(id) ON DELETE Cascade);
+CREATE TABLE app_index (id integer(10) NOT NULL, name varchar(255) NOT NULL, commentary varchar(255), table_id integer(10) NOT NULL, PRIMARY KEY (id), FOREIGN KEY(table_id) REFERENCES app_table(id) ON DELETE Cascade);
+CREATE TABLE app_index_attribute (index_id integer(10) NOT NULL, attribute_id integer(10) NOT NULL, FOREIGN KEY(index_id) REFERENCES app_index(id) ON DELETE Cascade, FOREIGN KEY(attribute_id) REFERENCES app_attribute(id) ON DELETE Cascade);
+CREATE TABLE app_relation (id integer(10) NOT NULL, table_from_id integer(10) NOT NULL, table_to_id integer(10) NOT NULL, index_id integer(10) NOT NULL, identify integer(10), PRIMARY KEY (id), FOREIGN KEY(table_from_id) REFERENCES app_table(id) ON DELETE Cascade, FOREIGN KEY(table_to_id) REFERENCES app_table(id) ON DELETE Cascade, FOREIGN KEY(index_id) REFERENCES app_index(id));
+CREATE TABLE relation_to_attr (relation_id integer(10) NOT NULL, attribute_id integer(10) NOT NULL, FOREIGN KEY(relation_id) REFERENCES app_relation(id) ON DELETE Cascade, FOREIGN KEY(attribute_id) REFERENCES app_attribute(id) ON DELETE Cascade);
 
-create table app_attribute(
-                       id integer primary key, 
-                       name text not null, 
-                       type text not null,
-                       definition text,
-                       commentary text,
-                       is_primary integer, -- 0 - не пк, 1 - пк
-                       is_nullable integer, -- 0 - not null, 1 - null
-                       is_unique integer, -- 0 - not unique, 1 - unique
-                       table_id integer references app_table(id) on delete cascade);
-
--- добавить constraints для атрибутов - в отдельную таблицу или к ним же
-
--- индексы - аггрегация атрибутов с целью создания связей между таблицами (составной FK)
-create table app_index(id integer primary key, 
-                       name text not null, 
-                       commentary text,
-                       table_id integer references app_table(id) on delete cascade);
-
-create table app_index_attribute(index_id integer references app_index(id) on delete cascade, 
-                       attribute_id integer references app_attribute(id) on delete cascade);
-
-create table app_relation(id integer primary key, 
-                       table_from_id integer references app_table(id) on delete cascade, 
-                       table_to_id integer references app_table(id) on delete cascade, 
-                       index_id integer references app_index(id) on delete cascade,
-                       identify integer); -- 0 - связь не идентифицирующая, 1 - идентифицирующая
-
--- атрибуты, появившиеся при создании связи между таблицами
-create table relation_to_attr(relation_id integer references app_relation(id) on delete cascade, 
-                              attribute_id integer references app_attribute(id) on delete cascade);

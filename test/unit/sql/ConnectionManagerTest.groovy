@@ -12,21 +12,6 @@ import static org.junit.Assert.*;
 public class ConnectionManagerTest {
 
 	ConnectionManager cm = new ConnectionManager();
-		
-	/**
-	 * Ошибочные данные при подключении -> исключение.
-	 */
-	@Test
-	public void testFailOpenConnection() {
-		boolean isException = false;
-		try {
-			cm.openAndGetConnection("wrongUrl", "user", "123456", Database.ORACLE);
-		} catch (Exception e) {
-			isException = true;
-		}
-		
-		assertTrue(isException);
-	}
 	
 	/**
 	 * Валидные данные - от компа к компу они разные, поэтому аннотация Ignore.
