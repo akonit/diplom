@@ -11,6 +11,7 @@ import entity.Index
  * Особенности синтаксиса:
  * ограничение unique записывается отдельно от самих атрибутов.
  */
+// переделать все с учетом того, что перешли к бд от оперативкиs
 public class MySqlConverter extends SqlConverter {
 
 	@Override

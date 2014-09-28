@@ -16,35 +16,6 @@ final class RelationshipUtils {
 	}
 	
 	/**
-	 * Запись в файл.
-	 * @param newAttrs - атрибуты, созданные после добавления связи.
-	 */
-	public static void createRelationship(Relationship rel, long indexId, List<Attribute> newAttrs) {
-		try {
-			rel.id = System.currentTimeMillis()
-			int identify = rel.cardinality.identifying ? 1 : 0
-			UserDataUtils.connection.execute("insert into app_relation"
-				+ "(id, table_from_id, table_to_id, index_id, identify) values(?, ?, ?, ?, ?)",
-				[rel.id, rel.fromEntity.id, rel.toEntity.id, indexId, identify])
-			
-			if (newAttrs != null & !newAttrs.isEmpty()) {
-				for (Attribute attr : newAttrs) {
-					UserDataUtils.connection.execute("insert into relation_to_attr"
-						+ "(relation_id, attribute_id) values(?, ?)", [rel.id, attr.id])
-				}
-			}
-			log.info("createRelationship from " 
-				+ rel.fromEntity.name + "to " + rel.toEntity.name + " -> done, " + rel.id)
-		} catch (Exception e) {
-			UserDataUtils.connection.rollback()
-			log.error("createRelationship from " 
-				+ rel.fromEntity.name + "to " + rel.toEntity.name + " -> failed", e)
-			throw new RuntimeException("failed to create relation")
-		}
-	}
-	
-	//NB: вызывает запись в файл.
-	/**
 	 * Создание связей между таблицами. Вызывается из контроллера
 	 * @param fromEntity родительская таблица.
 	 * @param toEntity дочерняя таблица.
@@ -52,15 +23,16 @@ final class RelationshipUtils {
 	 * @return созданная связь.
 	 */
 	//добавить валидацию на создание FK в зависимой таблице
-	public static Relationship assignRelationship(Entity fromEntity, 
+	public static Relationship createRelationship(Entity fromEntity, 
 			Entity toEntity, Index index, boolean identifying) {
 		Relationship relationship = new Relationship()
-		relationship.setIndex(index)
-        relationship.setFromEntity(fromEntity)
-		relationship.setToEntity(toEntity)
+		relationship.indexId = index.id
+        relationship.fromEntityId = fromEntity.id
+		relationship.toEntityId = toEntity.id
 		relationship.cardinality.identifying = identifying
 
 		List newAttrs = new ArrayList<>()
+		long time = System.currentTimeMillis()
 		for(Attribute fromAttr : index.attributes) {
 			Attribute toAttr = new Attribute()
 			toAttr.attributeType = fromAttr.attributeType
@@ -75,29 +47,94 @@ final class RelationshipUtils {
 			toAttr.id = System.currentTimeMillis()
 			relationship.getToAttr().add(toAttr)
 			newAttrs.add(toAttr)
-			AttributeUtils.createAttribute(toAttr, toEntity.id)
+			AttributeUtils.createAttribute(toAttr, toEntity.id, time)
 
 			if(toEntity.attributes == null) {
 				toEntity.attributes = new ArrayList<>()
 			}
 			toEntity.attributes.add(toAttr);//здесь была валидация >.<
 
-			log.info("assignRelationship - from {" + fromEntity.name + "} to {" + toEntity.name +
+			log.info("createRelationship - from {" + fromEntity.name + "} to {" + toEntity.name +
 					"} attribute {" + toAttr.name + "} by {" + index.name + "}")
 		}
-	    createRelationship(relationship, index.id, newAttrs)
+	    saveRelationship(relationship, index.id, time, newAttrs)
 		
 		return relationship;//добавить результат на модель в список связей
+	}
+	
+	private static void saveRelationship(Relationship rel, long indexId, long time, List<Attribute> newAttrs) {
+		try {
+			rel.id = System.currentTimeMillis()
+			int identify = rel.cardinality.identifying ? 1 : 0
+			UserDataUtils.connection.execute("insert into app_relation "
+					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted) "
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?)",
+					[
+						rel.id,
+						time,
+						Status.DONE.getName(),
+						rel.fromEntityId,
+						rel.toEntityId,
+						indexId,
+						identify,
+						0
+					])
+			
+			if (newAttrs != null & !newAttrs.isEmpty()) {
+				for (Attribute attr : newAttrs) {
+					UserDataUtils.connection.execute("insert into relation_to_attr"
+						+ " (id, status, time, relation_id, attribute_id, is_deleted) "
+						+ " values(?, ?, ?, ?, ?, ?)", [
+							System.currentTimeMillis(),
+							Status.DONE.getName(),
+							time,
+							rel.id, 
+							attr.id,
+							0])
+				}
+			}
+			log.info("createRelationship from " 
+				+ rel.fromEntityId + "to " + rel.toEntityId + " -> done, " + rel.id)
+		} catch (Exception e) {
+			UserDataUtils.connection.rollback()
+			log.error("createRelationship from " 
+				+ rel.fromEntityId + "to " + rel.toEntityId + " -> failed", e)
+			throw new RuntimeException("failed to create relation")
+		}
 	}
 	
 	/**
 	 * Удалит запись из файла. Заодно удалит атрибуты, порожденные при создании.
 	 */
 	public static void deleteRelationship(long relationId) {
+		deleteRelationship(relationId, System.currentTimeMillis())
+	}
+	
+	public static void deleteRelationship(long relationId, long time) {
 		try {
-			UserDataUtils.connection.execute("delete from app_attribute where id in"
-				+ " (select attribute_id from relation_to_attr where relation_id = ?)", [relationId])
-			UserDataUtils.connection.execute("delete from app_relation where id = ?", [relationId])
+			Relationship current = getCurrent(relationId)
+			if (current == null || current.isDeleted) {
+				return null
+			}
+			UserDataUtils.connection.execute("insert into app_relation "
+					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted) "
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?)",
+					[
+						current.id,
+						time,
+						Status.DONE.getName(),
+						current.fromEntityId,
+						current.toEntityId,
+						current.indexId,
+						current.cardinality.identifying ? 1 : 0,
+						1
+					])
+			UserDataUtils.connection.eachRow("select * from app_attribute where id in"
+				+ " (select attribute_id from relation_to_attr where relation_id = ?) "
+				+ " and is_deleted = 0",
+					[relationId]) { row ->
+						AttributeUtils.deleteAttribute(row.id, time)
+					}
 			log.info("deleteRelationship [" + relationId + "] -> done")
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
@@ -105,20 +142,27 @@ final class RelationshipUtils {
 			throw new RuntimeException("failed to delete relation")
 		}
 	}
+	
+	public static Relationship getCurrent(long id) {
+		def row = UserDataUtils.connection.firstRow("select * from app_relation where id = ? and status = ? order by time desc",
+				[
+					id,
+					Status.DONE.getName()
+				])
+		if (row == null) {
+			return row
+		}
 		
-	/**
-	 * Удаление связи между таблицами. Также удаляет данные из файла.
-	 * Метод вызывается из контроллера.
-	 * Предполагается, что после вызова метода связь будет удалена из 
-	 * коллекции связей на модели.
-	 * @param entity 
-	 * @param relationship
-	 */
-	public static void dropRelationship(Entity entity, Relationship relation) {
-			entity.attributes.removeAll(relation.getToAttr())
-			deleteRelationship(relation.id)
-			//валидация? 
-			log.info("dropRelationship - remove {" + relation.index.name +"} from {" +
-				entity.name + "}")
+		Relationship current = new Relationship()
+		current.id = row.id
+		current.time = row.time
+		current.fromEntityId = row.table_from_id
+		current.toEntityId = row.table_to_id
+		current.indexId = row.index_id
+		current.cardinality = new Relationship.Cardinality()
+		current.cardinality.identifying = row.identify == 0 ? false : true
+		current.isDeleted = row.is_deleted == 0 ? false : true
+		
+		return current
 	}
 }

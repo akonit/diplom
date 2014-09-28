@@ -1,6 +1,7 @@
 package entity;
 
 import java.util.List;
+import utils.Status
 
 import attribute.Attribute;
 
@@ -17,6 +18,12 @@ public class Entity {
 	private String name
 	
 	private String commentary
+	
+	private Status status
+	
+	private boolean isDeleted
+	
+	private long time
 	
 	/**
 	 * Список атрибутов таблицы.

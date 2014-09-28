@@ -3,6 +3,7 @@ package attribute
 import utils.*
 
 import org.junit.Test
+import org.junit.Ignore
 
 import attribute.AttributeTypes
 import attribute.Attribute
@@ -19,8 +20,8 @@ class AttributeTest {
 		adUtils.createNewFile(name)
 		
 		Entity entity = new Entity()
-		entity.setName("newEntity")
-		entity.setCommentary("test")
+		entity.name = "newEntity"
+		entity.commentary = "test"
 		
 		EntityUtils.createEntity(entity)
 		
@@ -31,15 +32,15 @@ class AttributeTest {
 		attr.id = System.currentTimeMillis()
 		attr.name = "test attr name"
 		
-		AttributeUtils.createAttribute(attr, entity.getId())
+		AttributeUtils.createAttribute(attr, entity.id)
 		def row = adUtils.getConnection().firstRow("select * from app_attribute")
-		assertEquals(attr.getName(), row.name)
+		assertEquals(attr.name, row.name)
 		
 		adUtils.save()
 		
 		AttributeUtils.deleteAttribute(attr.id)
-		row = adUtils.getConnection().firstRow("select * from app_attribute")
-		assertNull(row)
+		Attribute deleted = AttributeUtils.getCurrent(attr.id)
+		assertTrue(deleted.isDeleted)
 		
 		adUtils.exitApplication()
 	}
@@ -52,12 +53,12 @@ class AttributeTest {
 		adUtils.createNewFile(name)
 		
 		Entity entity = new Entity()
-		entity.setName("newEntity")
-		entity.setCommentary("test")
+		entity.name = "newEntity"
+		entity.commentary = "test"
 		
 		EntityUtils.createEntity(entity)
 		
-		def Attribute attr = new Attribute()
+		Attribute attr = new Attribute()
 		attr.attributeType = AttributeTypes.CLOB
 		attr.definition = "test attr"
 		attr.id = System.currentTimeMillis()
@@ -65,17 +66,17 @@ class AttributeTest {
 		
 		boolean isException = false
 		try {
-		    AttributeUtils.createAttribute(attr, entity.getId())
+		    AttributeUtils.createAttribute(attr, entity.id)
 		} catch (Exception e) {
 		    isException = true
 		}
 		
 		assertTrue(isException)
-		def row = adUtils.getConnection().firstRow("select * from app_attribute")
-		assertNull(row)
+		Attribute a = AttributeUtils.getCurrent(attr.id)
+		assertNull(a)
 		
-		row = adUtils.getConnection().firstRow("select * from app_table")
-		assertNull(row)
+		Entity e = EntityUtils.getCurrent(entity.id)
+		assertNull(e)
 		
 		adUtils.exitApplication()
 	}
@@ -88,13 +89,13 @@ class AttributeTest {
 		adUtils.createNewFile(name)
 		
 		Entity entity = new Entity()
-		entity.setName("newEntity")
-		entity.setCommentary("test")
+		entity.name = "newEntity"
+		entity.commentary = "test"
 		
 		EntityUtils.createEntity(entity)
 		adUtils.save()
 		
-		def Attribute attr = new Attribute()
+		Attribute attr = new Attribute()
 		attr.attributeType = AttributeTypes.CLOB
 		attr.definition = "test attr"
 		attr.id = System.currentTimeMillis()
@@ -108,11 +109,11 @@ class AttributeTest {
 		}
 		
 		assertTrue(isException)
-		def row = adUtils.getConnection().firstRow("select * from app_attribute")
-		assertNull(row)
+		Attribute a = AttributeUtils.getCurrent(attr.id)
+		assertNull(a)
 		
-		row = adUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		Entity e = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.name, e.name)
 		
 		adUtils.exitApplication()
 	}

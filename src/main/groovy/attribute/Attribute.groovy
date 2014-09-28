@@ -3,6 +3,7 @@ package attribute
 import lowmodel.attribute.type.*
 
 import org.apache.log4j.Logger
+import utils.Status
 
 import entity.Index
 
@@ -33,6 +34,12 @@ class Attribute implements Serializable {
 	 */
 	private AttributeTypes attributeType
 	
+	private long time
+	
+	private Status status
+	
+	private long entityId
+	
 	/**
 	 * Кастомный тип атрибута. varchar(20) например. на форме предполагается отображать
 	 * и изменять именно его
@@ -54,7 +61,7 @@ class Attribute implements Serializable {
 	/**
 	 * Ограничения, накладываемые на атрибуты.
 	 */
-	public class Constraints implements Serializable {
+	public static class Constraints implements Serializable {
 		private boolean nullable = true
 		
 		private boolean unique = false
@@ -98,6 +105,8 @@ class Attribute implements Serializable {
 	}
 	
 	private Constraints constraints
+	
+	private boolean isDeleted
 	
 	public Attribute() {
 		constraints = new Constraints()

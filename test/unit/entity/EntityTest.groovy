@@ -3,6 +3,7 @@ package entity
 import java.util.Arrays
 
 import org.junit.Test
+import org.junit.Ignore
 
 import utils.*
 import attribute.AttributeTypes
@@ -11,58 +12,60 @@ import entity.Entity
 import static org.junit.Assert.*
 
 public class EntityTest {
-
-	@Test
-	public void testEntityCreation() throws Exception {
-		Entity entity = new Entity()
-		entity.setName("newEntity")
-		
-		Attribute attr1 = new Attribute()
-		attr1.setAttributeType(AttributeTypes.VARCHAR)
-		attr1.setDefinition("attr1")
-		attr1.setId(System.currentTimeMillis())
-
-		Attribute attr2 = new Attribute()
-		attr2.setAttributeType(AttributeTypes.TIMESTAMP)
-		attr2.setDefinition("attr2")
-		attr2.setId(System.currentTimeMillis())
-		
-		entity.setAttributes(Arrays.asList(attr1, attr2))
-		
-		assertEquals(entity.getAttributes().size(), 2)
-	}
 	
 	@Test
-	public void testSaveEntityToFile() {
+	public void testCreateEntity() {
 		UserDataUtils adUtils = new UserDataUtils()
 		String name = "myNewDb" + System.currentTimeMillis()
 		adUtils.createNewFile(name)
 		
 		Entity entity = new Entity()
-		entity.setName("newEntity")
-		entity.setCommentary("test")
+		entity.name = "newEntity"
+		entity.commentary = "test"
 		
 		EntityUtils.createEntity(entity)
-		def row = adUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		Entity fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.name, fromFile.name)
 		
 		adUtils.exitApplication()
 	}
 	
-	//test on delete cascade 
 	@Test
-	public void testSaveDelete() {
+	public void testUpdateEntity() {
+		UserDataUtils adUtils = new UserDataUtils()
+		String name = "myNewDb" + System.currentTimeMillis()
+		adUtils.createNewFile(name)
+		
+		Entity entity = new Entity()
+		entity.name = "newEntity"
+		entity.commentary = "test"
+		
+		EntityUtils.createEntity(entity)
+		Entity fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.name, fromFile.name)
+		
+		entity.name = "newName"
+		EntityUtils.updateEntity(entity)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.name, fromFile.name)
+		
+		adUtils.exitApplication()
+	}
+	
+	@Test
+	public void testDelete() {
 		UserDataUtils adUtils = new UserDataUtils()
 		String name = "myNewDb" + System.currentTimeMillis()
 		adUtils.createNewFile(name);
 		
 		Entity entity = new Entity()
-		entity.setName("newEntity")
-		entity.setCommentary("test")
+		entity.name = "newEntity"
+		entity.commentary = "test"
 		
 		EntityUtils.createEntity(entity)
-		def row = adUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		Entity fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.getName(), fromFile.getName())
+		assertEquals(false, fromFile.isDeleted)
 		
 		def Attribute attr = new Attribute();
 		attr.attributeType = AttributeTypes.CLOB;
@@ -72,21 +75,22 @@ public class EntityTest {
 		attr.name = "test attr name"
 		
 		AttributeUtils.createAttribute(attr, entity.getId())
-		row = adUtils.getConnection().firstRow("select * from app_attribute")
-		assertEquals(attr.getName(), row.name)
+		Attribute fileAttr = AttributeUtils.getCurrent(attr.id)
+		assertEquals(attr.getName(), fileAttr.name)
 		
 		adUtils.save()//commit
 		
 		EntityUtils.deleteEntity(entity.getId())
-		row = adUtils.getConnection().firstRow("select * from app_table")
-		assertNull(row)
-		row = adUtils.getConnection().firstRow("select * from app_attribute")
-		assertNull(row)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(true, fromFile.isDeleted)
+		fileAttr = AttributeUtils.getCurrent(attr.id)
+		assertTrue(fileAttr.isDeleted)
 		
 		adUtils.exitApplication()
 	}
 	
 	@Test
+	@Ignore
 	public void testUndoRedoCreation() throws Exception {
 		String name = "myNewDb" + System.currentTimeMillis()
 		UserDataUtils.createNewFile(name);
@@ -111,6 +115,7 @@ public class EntityTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testUndoRedoDelete() throws Exception {
 		String name = "myNewDb" + System.currentTimeMillis()
 		UserDataUtils.createNewFile(name);

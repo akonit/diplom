@@ -4,81 +4,57 @@ import org.apache.log4j.Logger;
 
 import attribute.Attribute;
 import relationship.Relationship;
+import utils.Status
 import entity.Entity;
 import entity.Index
 
 /**
- * Связи между таблицами (FK). Создание предполагается через обращение к пакету utils.
+ * Связи между таблицами (FK).
  */
+//добавить имя?
 public class Relationship implements Serializable {
 
-	static Logger log = Logger.getLogger(Relationship.class.getName());
+	static Logger log = Logger.getLogger(Relationship.class.getName())
 	
 	private long id
 	
 	private Index index;
 	
-	private List<Attribute> toAttr = new ArrayList<>();
+	private List<Attribute> toAttr = new ArrayList<>()
 	
-	private Entity fromEntity;
+	private long fromEntityId
 	
-	private Entity toEntity;
+	private long toEntityId
 	
-	public class Cardinality implements Serializable {
-		private boolean identifying;
+	private long time
+	
+	private boolean isDeleted
+	
+	private Status status
+	
+	private long indexId
+	
+	public static class Cardinality implements Serializable {
 		
-		//enum type - нужно ли?
-		
-		public void setIdentifying(boolean identifying) {
-			this.identifying = identifying;
-			if (identifying) {
-				for (Attribute attr : toAttr) {
-					attr.getConstraints().setPrimary(true);
-				}
-			} else {
-				for (Attribute attr : toAttr) {
-					attr.getConstraints().setPrimary(false);
-				}
-			}
-		}
-		
-		public boolean isIdentifying() {
-			return identifying;
-		}
+		private boolean identifying
 	}
 	
-	private Cardinality cardinality = new Cardinality();
+	private Cardinality cardinality = new Cardinality()
 
 	public List<Attribute> getToAttr() {
-		return toAttr;
+		return toAttr
 	}
 
 	public void setToAttr(List<Attribute> toAttr) {
-		this.toAttr = toAttr;
-	}
-
-	public Entity getFromEntity() {
-		return fromEntity;
-	}
-
-	public void setFromEntity(Entity fromEntity) {
-		this.fromEntity = fromEntity;
-	}
-
-	public Entity getToEntity() {
-		return toEntity;
-	}
-
-	public void setToEntity(Entity toEntity) {
-		this.toEntity = toEntity;
+		this.toAttr = toAttr
 	}
 	
 	public void setCardinality(Cardinality cardinality) {
-		this.cardinality = cardinality;
+		this.cardinality = cardinality
 	}
 	
 	public Cardinality getCardinality() {
-		return cardinality;
+		return cardinality
 	}
 	
 	public void setIndex(Index index) {
