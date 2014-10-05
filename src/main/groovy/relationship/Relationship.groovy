@@ -18,13 +18,15 @@ public class Relationship implements Serializable {
 	
 	private long id
 	
-	private Index index;
-	
 	private List<Attribute> toAttr = new ArrayList<>()
 	
 	private long fromEntityId
 	
+	private long fromEntityTime
+	
 	private long toEntityId
+	
+	private long toEntityTime
 	
 	private long time
 	
@@ -33,6 +35,8 @@ public class Relationship implements Serializable {
 	private Status status
 	
 	private long indexId
+	
+	private long indexTime
 	
 	public static class Cardinality implements Serializable {
 		

@@ -16,7 +16,6 @@ import utils.*
 public class RelationshipTest {
 
 	@Test
-	@Ignore
 	public void testRelationshipCreation() {
 		UserDataUtils adUtils = new UserDataUtils()
 		String name = "myNewDb" + System.currentTimeMillis()
@@ -43,7 +42,8 @@ public class RelationshipTest {
 		i.addAttribute(a1)
 		IndexUtils.createIndex(i, m1.getId())
 		
-		Relationship relation = RelationshipUtils.createRelationship(m1, m2, i, false);
+		Relationship relation = RelationshipUtils.createRelationship(EntityUtils.getCurrent(m1.id), 
+			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false);
 		
 		Relationship r = RelationshipUtils.getCurrent(relation.id)
 		assertEquals(m1.getId(), r.fromEntityId)
@@ -52,7 +52,6 @@ public class RelationshipTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testRelationshipDropping() {
 		UserDataUtils adUtils = new UserDataUtils()
 		String name = "myNewDb" + System.currentTimeMillis()
@@ -88,7 +87,8 @@ public class RelationshipTest {
 		
 		m1.attributes = Arrays.asList(a1, a2)
 		
-		Relationship relation = RelationshipUtils.createRelationship(m1, m2, i, false)
+		Relationship relation = RelationshipUtils.createRelationship(EntityUtils.getCurrent(m1.id), 
+			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false)
 		
 		Relationship r = RelationshipUtils.getCurrent(relation.id)
 		assertEquals(m1.getId(), r.fromEntityId)
@@ -148,7 +148,8 @@ public class RelationshipTest {
 		IndexUtils.createIndex(i, m1.getId())
 		
 		//fourth transaction
-		Relationship relation = RelationshipUtils.createRelationship(m1, m2, i, false)
+		Relationship relation = RelationshipUtils.createRelationship(EntityUtils.getCurrent(m1.id), 
+			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false)
 		
 		Relationship r = RelationshipUtils.getCurrent(relation.id)
 		assertEquals(m1.getId(), r.fromEntityId)
@@ -171,6 +172,6 @@ public class RelationshipTest {
 		
 		rows = UserDataUtils.getConnection().rows("select * from app_attribute "
 			+ " where status = ? and table_id = ?", Status.DONE.name, m2.id)
-		assertEquals(2, rows.size)//redo created with relation attributes - one transaction
+		assertEquals(1, rows.size)//redo created with relation attributes - one transaction
 	}
 }

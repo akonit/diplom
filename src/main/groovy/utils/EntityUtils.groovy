@@ -17,7 +17,8 @@ public final class EntityUtils {
 	public static void createEntity(Entity entity) {
 		try {
 			entity.id = System.currentTimeMillis()
-		    UserDataUtils.connection.execute("insert into app_table(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
+		    UserDataUtils.connection.execute("insert into app_table "
+				+ "(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
 						entity.id,
 						System.currentTimeMillis(),
 						Status.DONE.getName(),
@@ -40,7 +41,8 @@ public final class EntityUtils {
 	 */
 	public static void updateEntity(Entity entity) {
 		try {
-			UserDataUtils.connection.execute("insert into app_table(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
+			UserDataUtils.connection.execute("insert into app_table "
+				+ "(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
 						entity.id,
 						System.currentTimeMillis(),
 						Status.DONE.getName(),
@@ -70,7 +72,8 @@ public final class EntityUtils {
 			if (entity == null) {
 				return
 			}
-		    UserDataUtils.connection.execute("insert into app_table(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
+		    UserDataUtils.connection.execute("insert into app_table "
+				+ "(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
 						entity.id,
 						time,
 						Status.DONE.getName(),

@@ -15,6 +15,8 @@ public class Index implements Serializable {
 	
 	private long entityId
 	
+	private long entityTime
+	
 	private long time
 	
 	private Status status

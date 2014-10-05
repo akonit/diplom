@@ -29,11 +29,21 @@ final class RelationshipUtils {
 		relationship.indexId = index.id
         relationship.fromEntityId = fromEntity.id
 		relationship.toEntityId = toEntity.id
+		relationship.indexTime = index.time
+        relationship.fromEntityTime = fromEntity.time
+		relationship.toEntityTime = toEntity.time
 		relationship.cardinality.identifying = identifying
 
 		List newAttrs = new ArrayList<>()
 		long time = System.currentTimeMillis()
-		for(Attribute fromAttr : index.attributes) {
+		def rows = UserDataUtils.connection.rows("select distinct(aa.id) as id from app_index ai, "
+			+ " app_attribute aa, app_index_attribute aia where ai.id = aia.index_id and "
+			+ " aa.id = aia.attribute_id and aia.status = ? and aia.is_deleted = ?", [Status.DONE.name, 0])
+		for (def row : rows) {
+			Attribute fromAttr = AttributeUtils.getCurrent(row.id)
+			if (fromAttr == 0) {
+				continue
+			}
 			Attribute toAttr = new Attribute()
 			toAttr.attributeType = fromAttr.attributeType
 			toAttr.name = fromAttr.name
@@ -45,6 +55,9 @@ final class RelationshipUtils {
 				relationship.cardinality.identifying = true
 			}
 			toAttr.id = System.currentTimeMillis()
+			toAttr.time = time
+			toAttr.entityId = toEntity.id
+			toAttr.entityTime = toEntity.time
 			relationship.getToAttr().add(toAttr)
 			newAttrs.add(toAttr)
 			AttributeUtils.createAttribute(toAttr, toEntity.id, time)
@@ -67,8 +80,9 @@ final class RelationshipUtils {
 			rel.id = System.currentTimeMillis()
 			int identify = rel.cardinality.identifying ? 1 : 0
 			UserDataUtils.connection.execute("insert into app_relation "
-					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted) "
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted, "
+					+ " table_to_time, table_from_time, index_time) "
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						rel.id,
 						time,
@@ -77,30 +91,35 @@ final class RelationshipUtils {
 						rel.toEntityId,
 						indexId,
 						identify,
-						0
+						0,
+						rel.toEntityTime,
+						rel.fromEntityTime,
+						rel.indexTime
 					])
 			
 			if (newAttrs != null & !newAttrs.isEmpty()) {
 				for (Attribute attr : newAttrs) {
 					UserDataUtils.connection.execute("insert into relation_to_attr"
-						+ " (id, status, time, relation_id, attribute_id, is_deleted) "
-						+ " values(?, ?, ?, ?, ?, ?)", [
+						+ " (id, status, time, relation_id, attribute_id, is_deleted, attribute_time, relation_time) "
+						+ " values(?, ?, ?, ?, ?, ?, ?, ?)", [
 							System.currentTimeMillis(),
 							Status.DONE.getName(),
 							time,
 							rel.id, 
 							attr.id,
-							0])
+							0,
+							attr.time,
+							time])
 				}
 			}
 			
 			UserDataUtils.cleanUpUndone()
 			log.info("createRelationship from " 
-				+ rel.fromEntityId + "to " + rel.toEntityId + " -> done, " + rel.id)
+				+ rel.fromEntityId + " to " + rel.toEntityId + " -> done, " + rel.id)
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
 			log.error("createRelationship from " 
-				+ rel.fromEntityId + "to " + rel.toEntityId + " -> failed", e)
+				+ rel.fromEntityId + " to " + rel.toEntityId + " -> failed", e)
 			throw new RuntimeException("failed to create relation")
 		}
 	}
@@ -119,8 +138,9 @@ final class RelationshipUtils {
 				return null
 			}
 			UserDataUtils.connection.execute("insert into app_relation "
-					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted) "
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted,"
+					+ " table_to_time, table_from_time, index_time) "
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						current.id,
 						time,
@@ -129,7 +149,10 @@ final class RelationshipUtils {
 						current.toEntityId,
 						current.indexId,
 						current.cardinality.identifying ? 1 : 0,
-						1
+						1,
+						current.toEntityTime,
+						current.fromEntityTime,
+						current.indexTime,
 					])
 			UserDataUtils.connection.eachRow("select * from app_attribute where id in"
 				+ " (select attribute_id from relation_to_attr where relation_id = ?) "
@@ -163,6 +186,9 @@ final class RelationshipUtils {
 		current.fromEntityId = row.table_from_id
 		current.toEntityId = row.table_to_id
 		current.indexId = row.index_id
+		current.fromEntityTime = row.table_from_time
+		current.toEntityTime = row.table_to_time
+		current.indexTime = row.index_time
 		current.cardinality = new Relationship.Cardinality()
 		current.cardinality.identifying = row.identify == 0 ? false : true
 		current.isDeleted = row.is_deleted == 0 ? false : true

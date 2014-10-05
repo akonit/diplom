@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="griffon-app/conf"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/groovy"/>
 	<classpathentry kind="src" path="griffon-app/controllers"/>
 	<classpathentry kind="src" path="griffon-app/i18n"/>

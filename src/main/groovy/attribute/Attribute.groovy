@@ -40,6 +40,8 @@ class Attribute implements Serializable {
 	
 	private long entityId
 	
+	private long entityTime
+	
 	/**
 	 * Кастомный тип атрибута. varchar(20) например. на форме предполагается отображать
 	 * и изменять именно его

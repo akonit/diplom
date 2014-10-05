@@ -49,7 +49,8 @@ public class IndexTest {
 		
 		m1.attributes = Arrays.asList(a1, a2)
 		
-		Relationship relation = RelationshipUtils.createRelationship(m1, m2, i, false)
+		Relationship relation = RelationshipUtils.createRelationship(EntityUtils.getCurrent(m1.id), 
+			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false)
 		
 		Relationship r = RelationshipUtils.getCurrent(relation.id)
 		assertEquals(m1.getId(), r.fromEntityId)

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger
 
 import attribute.AttributeTypes
 import attribute.Attribute
+import entity.Entity
 import lowmodel.attribute.type.*
 
 final class AttributeUtils {
@@ -24,11 +25,12 @@ final class AttributeUtils {
 	
 	public static void createAttribute(Attribute attr, long entityId, long time) {
 		try {
+			Entity e = EntityUtils.getCurrent(entityId)
 			attr.id = System.currentTimeMillis()
 			UserDataUtils.connection.execute("insert into app_attribute"
 					+ " (id, time, status, name, type, definition, commentary, is_primary, is_nullable,"
-					+ " is_unique, table_id, is_deleted)"
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " is_unique, table_id, table_time, is_deleted)"
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						attr.id,
 						time,
@@ -41,6 +43,7 @@ final class AttributeUtils {
 						attr.constraints.nullable ? 1 : 0,
 						attr.constraints.unique ? 1 : 0,
 						entityId,
+						e.time,
 						0
 					])
 			
@@ -61,8 +64,8 @@ final class AttributeUtils {
 		try {
 			UserDataUtils.connection.execute("insert into app_attribute"
 					+ " (id, time, name, type, definition, commentary, is_primary, is_nullable,"
-					+ " is_unique, table_id, is_deleted)"
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " is_unique, table_id, table_time, is_deleted)"
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						attr.id,
 						System.currentTimeMillis(),
@@ -74,6 +77,7 @@ final class AttributeUtils {
 						attr.constraints.nullable ? 1 : 0,
 						attr.constraints.unique ? 1 : 0,
 						attr.entityId,
+						attr.entityTime,
 						0
 					])
 			
@@ -102,8 +106,8 @@ final class AttributeUtils {
 
 			UserDataUtils.connection.execute("insert into app_attribute"
 					+ " (id, time, status, name, type, definition, commentary, is_primary, is_nullable,"
-					+ " is_unique, table_id, is_deleted)"
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " is_unique, table_id, table_time, is_deleted)"
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						current.id,
 						time,
@@ -116,12 +120,14 @@ final class AttributeUtils {
 						current.constraints.nullable ? 1 : 0,
 						current.constraints.unique ? 1 : 0,
 						current.entityId,
+						current.entityTime,
 						1
 					])
 			UserDataUtils.connection.eachRow("select distinct rta.id as id "
 					+ " from relation_to_attr rta, app_attribute at where "
 					+ " rta.attribute_id = at.id and at.id = ?", [current.id]) {
-						def row = UserDataUtils.connection.firstRow("select relation_id, is_deleted from relation_to_attr "
+						def row = UserDataUtils.connection.firstRow("select relation_id, is_deleted, "
+							    + "attribute_time, relation_time from relation_to_attr "
 								+ " where id = ? and status = ? order by time desc",
 								[
 									it.id,
@@ -129,14 +135,17 @@ final class AttributeUtils {
 								])
 						if (row != null && row.is_deleted == 0) {
 							UserDataUtils.connection.execute("insert into relation_to_attr "
-									+ " (id, status, time, attribute_id, relation_id, is_deleted) values "
-									+ " (?, ?, ?, ?, ?, ?)", [
+									+ " (id, status, time, attribute_id, relation_id, is_deleted, "
+									+ " attribute_time, relation_time) values "
+									+ " (?, ?, ?, ?, ?, ?, ?, ?)", [
 										it.id,
 										Status.DONE.getName(),
 										time,
 										current.id,
 										row.relation_id,
-										1
+										1,
+                                        time,
+										row.relation_time
 									])
 							RelationshipUtils.deleteRelationship(row.relation_id, time)
 						}
@@ -144,7 +153,8 @@ final class AttributeUtils {
 			UserDataUtils.connection.eachRow("select distinct aia.id as id  "
 					+ " from app_index_attribute aia, app_attribute at where "
 					+ " aia.attribute_id = at.id and at.id = ?", [current.id]) {
-						def row = UserDataUtils.connection.firstRow("select index_id from app_index_attribute "
+						def row = UserDataUtils.connection.firstRow("select index_id, attribute_time, index_time"
+							    + " from app_index_attribute "
 								+ " where is_deleted = 0 and id = ? and status = ? order by time desc",
 								[
 									it.id,
@@ -152,14 +162,16 @@ final class AttributeUtils {
 								])
 						if (row != null && row.is_deleted == 0) {
 							UserDataUtils.connection.execute("insert into app_index_attribute "
-									+ " (id, status, time, attribute_id, index_id, is_deleted) values "
-									+ "(?, ?, ?, ?, ?, ?)", [
+									+ " (id, status, time, attribute_id, index_id, is_deleted, attribute_time, index_time) values "
+									+ "(?, ?, ?, ?, ?, ?, ?, ?)", [
 										it.id,
 										Status.DONE,
 										time,
 										current.id,
 										row.index_id,
-										1
+										1,
+										row.attribute_time,
+										row.index_time
 									])
 						}
 					}
@@ -187,6 +199,7 @@ final class AttributeUtils {
 		current.id = row.id
 		current.time = row.time
 		current.entityId = row.table_id
+		current.entityTime = row.table_time
 		current.name = row.name
 		current.activeAttributeType = row.type
 		current.definition = row.definition
