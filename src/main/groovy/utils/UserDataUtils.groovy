@@ -60,15 +60,81 @@ public class UserDataUtils {
 	
 	/**
 	 * Отменить последнее действие.
+	 * Получаем время последней транзакции в статусе 'DONE' и отмечаем отмененными все записи в бд,
+	 * датируемые этим временем.
 	 */
 	public static void undo() {
-		
+		try {
+			def row = UserDataUtils.connection.firstRow("select time from app_table "
+					+ " union select time from app_attribute "
+					+ " union select time from app_relation "
+					+ " union select time from app_index "
+					+ " union select time from relation_to_attr "
+					+ " union select time from app_index_attribute "
+					+ " where status = ? order by time desc", [Status.DONE.name])
+			if (row == null) {
+				log.error("undo -> nothing to be undone here")
+				return
+			}
+
+			long time = row.time;
+			updateStatus(time, Status.UNDONE)
+			log.info("undo -> done")
+		} catch (Exception e) {
+			log.error("undo -> error", e)
+			throw new RuntimeException(e)
+		}
 	}
 	
 	/**
 	 * Повторить последнее отмененное действие.
+	 * Получаем время последней транзакции в статусе 'DONE' и отмечаем отмененными все записи в бд,
+	 * датируемые этим временем.
 	 */
 	public static void redo() {
-		
+		try {
+			def row = UserDataUtils.connection.firstRow("select time from app_table "
+					+ " union select time from app_attribute "
+					+ " union select time from app_relation "
+					+ " union select time from app_index "
+					+ " union select time from relation_to_attr "
+					+ " union select time from app_index_attribute "
+					+ " where status = ? order by time desc", [Status.UNDONE.name])
+			if (row == null) {
+				log.error("redo -> nothing to be undone here")
+				return
+			}
+
+			long time = row.time;
+			updateStatus(time, Status.DONE)
+			log.info("redo -> done")
+		} catch (Exception e) {
+			log.error("redo -> error", e)
+			throw new RuntimeException(e)
+		}		
+	}
+	
+	/**
+	 * Обновит статус во всех записях базы данных с указанным временем транзакции.
+	 */
+	private static void updateStatus(long time, Status status) {
+		UserDataUtils.connection.execute("update app_table set status = ? where time = ?", [status.name, time])
+		UserDataUtils.connection.execute("update app_attribute set status = ? where time = ?", [status.name, time])
+		UserDataUtils.connection.execute("update app_relation set status = ? where time = ?", [status.name, time])
+		UserDataUtils.connection.execute("update app_index set status = ? where time = ?", [status.name, time])
+		UserDataUtils.connection.execute("update relation_to_attr set status = ? where time = ?", [status.name, time])
+		UserDataUtils.connection.execute("update app_index_attribute set status = ? where time = ?", [status.name, time])
+	}
+	
+	/**
+	 * Удалит все записи в статусе 'UNDONE'.
+	 */
+	public static void cleanUpUndone() {
+		UserDataUtils.connection.execute("delete from app_table where status = ?", [Status.UNDONE.name])
+		UserDataUtils.connection.execute("delete from app_attribute where status = ?", [Status.UNDONE.name])
+		UserDataUtils.connection.execute("delete from app_relation where status = ?", [Status.UNDONE.name])
+		UserDataUtils.connection.execute("delete from app_index where status = ?", [Status.UNDONE.name])
+		UserDataUtils.connection.execute("delete from relation_to_attr where status = ?", [Status.UNDONE.name])
+		UserDataUtils.connection.execute("delete from app_index_attribute where status = ?", [Status.UNDONE.name])
 	}
 }

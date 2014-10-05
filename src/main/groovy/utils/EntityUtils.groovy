@@ -26,6 +26,7 @@ public final class EntityUtils {
 						0
 					])
 			
+			UserDataUtils.cleanUpUndone()			
 			log.info("createEntity [" + entity.name + "] -> done, " + entity.id)
 		} catch (Exception e) {
 		    UserDataUtils.connection.rollback()
@@ -49,6 +50,8 @@ public final class EntityUtils {
 					])
 			
 			entity = getCurrent(entity.id)
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("updateEntity [" + entity.name + "] -> done, " + entity.id)
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
@@ -88,6 +91,8 @@ public final class EntityUtils {
                 IndexUtils.deleteIndex(it.id)
             }
 			log.info("deleteEntity [" + entityId + "] -> done")
+			
+			UserDataUtils.cleanUpUndone()
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
 			log.error("deleteEntity [" + entityId + "] -> failed", e)
@@ -99,7 +104,7 @@ public final class EntityUtils {
 		def row = UserDataUtils.connection.firstRow("select * from app_table where id = ? and status = ? order by time desc",
 				[
 					id,
-					Status.DONE.getName()
+					Status.DONE.name
 				])
 		if (row == null) {
 			return row

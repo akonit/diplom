@@ -43,6 +43,8 @@ final class AttributeUtils {
 						entityId,
 						0
 					])
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("createAttribute ["+ attr.name + "] -> done, " + attr.id)
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
@@ -74,6 +76,8 @@ final class AttributeUtils {
 						attr.entityId,
 						0
 					])
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("createAttribute ["+ attr.name + "] -> done, " + attr.id)
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
@@ -159,6 +163,8 @@ final class AttributeUtils {
 									])
 						}
 					}
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("deleteAttribute [" + attrId + "] -> done")
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()

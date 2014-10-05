@@ -90,7 +90,6 @@ public class EntityTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testUndoRedoCreation() throws Exception {
 		String name = "myNewDb" + System.currentTimeMillis()
 		UserDataUtils.createNewFile(name);
@@ -100,22 +99,23 @@ public class EntityTest {
 		
 		// create
 		EntityUtils.createEntity(entity)
-		def row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		def fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.getName(), fromFile.name)
 
 		// undo create
 		UserDataUtils.undo()
-		row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertNull(row)
+		fromFile = UserDataUtils.getConnection().firstRow("select * from app_table order by time desc")
+		assertEquals(Status.UNDONE.name, fromFile.status)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertNull(fromFile)
 		
 		//redo create
 		UserDataUtils.redo()
-		row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.getName(), fromFile.name)
 	}
 	
 	@Test
-	@Ignore
 	public void testUndoRedoDelete() throws Exception {
 		String name = "myNewDb" + System.currentTimeMillis()
 		UserDataUtils.createNewFile(name);
@@ -125,22 +125,22 @@ public class EntityTest {
 		
 		// create
 		EntityUtils.createEntity(entity)
-		def row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		def fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(entity.getName(), fromFile.name)
 		
 		//delete
 		EntityUtils.deleteEntity(entity.id)
-		row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertNull(row)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(true, fromFile.isDeleted)
 
 		// undo delete
 		UserDataUtils.undo()
-		row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertEquals(entity.getName(), row.name)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(false, fromFile.isDeleted)
 		
 		//redo delete
 		UserDataUtils.redo()
-		row = UserDataUtils.getConnection().firstRow("select * from app_table")
-		assertNull(row)
+		fromFile = EntityUtils.getCurrent(entity.id)
+		assertEquals(true, fromFile.isDeleted)
 	}
 }

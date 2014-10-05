@@ -93,6 +93,8 @@ final class RelationshipUtils {
 							0])
 				}
 			}
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("createRelationship from " 
 				+ rel.fromEntityId + "to " + rel.toEntityId + " -> done, " + rel.id)
 		} catch (Exception e) {
@@ -135,6 +137,8 @@ final class RelationshipUtils {
 					[relationId]) { row ->
 						AttributeUtils.deleteAttribute(row.id, time)
 					}
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("deleteRelationship [" + relationId + "] -> done")
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()

@@ -42,6 +42,8 @@ class IndexUtils {
 							0])
 				}
 			}
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("createIndex [" + index.name + "] -> done, " + index.id)
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
@@ -80,6 +82,8 @@ class IndexUtils {
 							0])
 				}
 			}
+			
+			UserDataUtils.cleanUpUndone()
 			log.info("updateIndex [" + index.name + "] -> done, " + index.id)
 		} catch (Exception e) {
 			UserDataUtils.connection.rollback()
@@ -136,6 +140,8 @@ class IndexUtils {
 									])
 						}
 					}
+			
+			UserDataUtils.cleanUpUndone()
 		    log.info("deleteIndex [" + indexId + "] -> done")
 	    } catch (Exception e) {
 		    UserDataUtils.connection.rollback()
