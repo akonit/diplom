@@ -21,6 +21,7 @@ public class UserDataUtils {
 	 */
 	public static void createNewFile(String name) {
 		try {
+			new File("saves").mkdir();
 			InputStream is = new FileInputStream("configuration/base.db")//ClassLoader.getSystemClassLoader().getSystemResourceAsStream("base.db")
 		    Files.copy(is, Paths.get("saves/" + name + ".db"))
 			is.close()
@@ -50,6 +51,61 @@ public class UserDataUtils {
 		ConnectionManager.closeConnection(connection)
 	}
 	
+	/**
+	 * Оставит в бд только актуальные версии объектов.
+	 */
+	public static void cleanUp() {
+		try {
+			//clean up undone
+			cleanUpUndone()
+			
+			//clean up deleted
+			connection.execute("delete from app_table where is_deleted = ?", [1])
+		    connection.execute("delete from app_attribute where is_deleted = ?", [1])
+		    connection.execute("delete from app_relation where is_deleted = ?", [1])
+		    connection.execute("delete from app_index where is_deleted = ?", [1])
+		    connection.execute("delete from relation_to_attr where is_deleted = ?", [1])
+		    connection.execute("delete from app_index_attribute where is_deleted = ?", [1])
+			
+			//clean up old versions
+			connection.eachRow("select distinct(id) from app_table") {
+				def row = connection.firstRow("select * from app_table where id = ? order by time desc",
+						[it.id])
+				connection.execute("delete from app_table where id = ? and time != ?", [it.id, row.time])
+			}
+			connection.eachRow("select distinct(id) from app_attribute") {
+				def row = connection.firstRow("select * from app_attribute where id = ? order by time desc",
+						[it.id])
+				connection.execute("delete from app_attribute where id = ? and time != ?", [it.id, row.time])
+			}
+			connection.eachRow("select distinct(id) from app_relation") {
+				def row = connection.firstRow("select * from app_relation where id = ? order by time desc",
+						[it.id])
+				connection.execute("delete from app_relation where id = ? and time != ?", [it.id, row.time])
+			}
+			connection.eachRow("select distinct(id) from app_index") {
+				def row = connection.firstRow("select * from app_index where id = ? order by time desc",
+						[it.id])
+				connection.execute("delete from app_index where id = ? and time != ?", [it.id, row.time])
+			}
+			connection.eachRow("select distinct(id) from relation_to_attr") {
+				def row = connection.firstRow("select * from relation_to_attr where id = ? order by time desc",
+						[it.id])
+				connection.execute("delete from relation_to_attr where id = ? and time != ?", [it.id, row.time])
+			}
+			connection.eachRow("select distinct(id) from app_index_attribute") {
+				def row = connection.firstRow("select * from app_index_attribute where id = ? order by time desc",
+						[it.id])
+				connection.execute("delete from app_index_attribute where id = ? and time != ?", [it.id, row.time])
+			}
+			
+			log.info("cleanUp -> done")
+		} catch (Exception e) {
+		    log.error("cleanUp -> error", e)
+		    throw new RuntimeException(e)
+		}
+	}
+	
 	public static void save() {
 		connection.commit()
 	}
@@ -65,7 +121,7 @@ public class UserDataUtils {
 	 */
 	public static void undo() {
 		try {
-			def row = UserDataUtils.connection.firstRow("select time from app_table "
+			def row = connection.firstRow("select time from app_table "
 					+ " union select time from app_attribute "
 					+ " union select time from app_relation "
 					+ " union select time from app_index "
@@ -93,7 +149,7 @@ public class UserDataUtils {
 	 */
 	public static void redo() {
 		try {
-			def row = UserDataUtils.connection.firstRow("select time from app_table "
+			def row = connection.firstRow("select time from app_table "
 					+ " union select time from app_attribute "
 					+ " union select time from app_relation "
 					+ " union select time from app_index "
@@ -118,23 +174,23 @@ public class UserDataUtils {
 	 * Обновит статус во всех записях базы данных с указанным временем транзакции.
 	 */
 	private static void updateStatus(long time, Status status) {
-		UserDataUtils.connection.execute("update app_table set status = ? where time = ?", [status.name, time])
-		UserDataUtils.connection.execute("update app_attribute set status = ? where time = ?", [status.name, time])
-		UserDataUtils.connection.execute("update app_relation set status = ? where time = ?", [status.name, time])
-		UserDataUtils.connection.execute("update app_index set status = ? where time = ?", [status.name, time])
-		UserDataUtils.connection.execute("update relation_to_attr set status = ? where time = ?", [status.name, time])
-		UserDataUtils.connection.execute("update app_index_attribute set status = ? where time = ?", [status.name, time])
+		connection.execute("update app_table set status = ? where time = ?", [status.name, time])
+		connection.execute("update app_attribute set status = ? where time = ?", [status.name, time])
+		connection.execute("update app_relation set status = ? where time = ?", [status.name, time])
+		connection.execute("update app_index set status = ? where time = ?", [status.name, time])
+		connection.execute("update relation_to_attr set status = ? where time = ?", [status.name, time])
+		connection.execute("update app_index_attribute set status = ? where time = ?", [status.name, time])
 	}
 	
 	/**
 	 * Удалит все записи в статусе 'UNDONE'.
 	 */
 	public static void cleanUpUndone() {
-		UserDataUtils.connection.execute("delete from app_table where status = ?", [Status.UNDONE.name])
-		UserDataUtils.connection.execute("delete from app_attribute where status = ?", [Status.UNDONE.name])
-		UserDataUtils.connection.execute("delete from app_relation where status = ?", [Status.UNDONE.name])
-		UserDataUtils.connection.execute("delete from app_index where status = ?", [Status.UNDONE.name])
-		UserDataUtils.connection.execute("delete from relation_to_attr where status = ?", [Status.UNDONE.name])
-		UserDataUtils.connection.execute("delete from app_index_attribute where status = ?", [Status.UNDONE.name])
+		connection.execute("delete from app_table where status = ?", [Status.UNDONE.name])
+		connection.execute("delete from app_attribute where status = ?", [Status.UNDONE.name])
+		connection.execute("delete from app_relation where status = ?", [Status.UNDONE.name])
+		connection.execute("delete from app_index where status = ?", [Status.UNDONE.name])
+		connection.execute("delete from relation_to_attr where status = ?", [Status.UNDONE.name])
+		connection.execute("delete from app_index_attribute where status = ?", [Status.UNDONE.name])
 	}
 }

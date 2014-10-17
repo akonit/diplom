@@ -174,4 +174,62 @@ public class RelationshipTest {
 			+ " where status = ? and table_id = ?", Status.DONE.name, m2.id)
 		assertEquals(1, rows.size)//redo created with relation attributes - one transaction
 	}
+	
+	@Test
+	public void testCleanUp() throws Exception {
+		//create data
+		UserDataUtils adUtils = new UserDataUtils()
+		String name = "myNewDb" + System.currentTimeMillis()
+		adUtils.createNewFile(name)
+		
+		Entity m1 = new Entity()
+		m1.name = "m1"
+		//first transaction
+		EntityUtils.createEntity(m1)
+		Index i = new Index()
+		i.name = "testIndex"
+		m1.indexes.add(i)
+		Entity m2 = new Entity()
+		m2.name = "m2"
+		//second transaction
+		EntityUtils.createEntity(m2)
+		
+		Attribute a1 = new Attribute()
+		a1.attributeType = AttributeTypes.CLOB
+		a1.activeAttributeType = AttributeTypes.CLOB.name
+		a1.definition = "test attr" + System.currentTimeMillis()
+		a1.name = "a1"
+		a1.id = System.currentTimeMillis()
+		AttributeUtils.createAttribute(a1, m1.getId())
+		m1.attributes = Arrays.asList(a1)
+		i.addAttribute(a1)
+		//third transaction
+		IndexUtils.createIndex(i, m1.getId())
+		
+		//fourth transaction
+		Relationship relation = RelationshipUtils.createRelationship(EntityUtils.getCurrent(m1.id), 
+			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false)
+		
+		Relationship r = RelationshipUtils.getCurrent(relation.id)
+		assertEquals(m1.getId(), r.fromEntityId)
+		assertEquals(m2.getId(), r.toEntityId)
+		
+		//update
+		m1.name = "m1_updated"
+		EntityUtils.updateEntity(m1)
+		
+		m2.name = "m2_updated"
+		EntityUtils.updateEntity(m2)
+		
+		// check current state
+		def rows = UserDataUtils.getConnection().rows("select * from app_table")
+		assertEquals(4, rows.size())
+		
+		//clean up
+		UserDataUtils.cleanUp()
+		rows = UserDataUtils.getConnection().rows("select * from app_table")
+		assertEquals(2, rows.size())//get rid of pre-update versions
+		assertEquals(m1.name, EntityUtils.getCurrent(m1.id).name)
+		assertEquals(m2.name, EntityUtils.getCurrent(m2.id).name)
+	}
 }
