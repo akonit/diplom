@@ -18,13 +18,28 @@ public enum AttributeTypes {
 	VARCHAR("VARCHAR()", Arrays.asList(ORACLE, MY_SQL), true),
 	NVARCHAR("NVARCHAR()", Arrays.asList(ORACLE, MY_SQL), true),
 	
+	//bit string attributes
+	BIT("BIT()", Arrays.asList(ORACLE, MY_SQL), true),
+	BIT_VARYING("BIT VARYING()", Arrays.asList(ORACLE, MY_SQL), true),
+	
 	//database attributes
 	DATE ("DATE", Arrays.asList(ORACLE, MY_SQL), false),
+	TIME ("TIME", Arrays.asList(ORACLE, MY_SQL), false),
 	TIMESTAMP ("TIMESTAMP", Arrays.asList(ORACLE, MY_SQL), false),
 	TIMESTAMP_CLAUSE ("TIMESTAMP()", Arrays.asList(ORACLE, MY_SQL), true),
+	INTERVAL ("INTERVAL", Arrays.asList(ORACLE, MY_SQL), false),
 	
 	// binary attributes
-	CLOB("CLOB", Arrays.asList(ORACLE, MY_SQL), false);
+	CLOB("CLOB", Arrays.asList(ORACLE, MY_SQL), false),
+	
+	// numbers
+	INTEGER("INTEGER", Arrays.asList(ORACLE, MY_SQL), false),
+	SMALLINT("SMALLINT", Arrays.asList(ORACLE, MY_SQL), false),
+	DECIMAL("DECIMAL()", Arrays.asList(ORACLE, MY_SQL), true),
+	NUMERIC("NUMERIC()", Arrays.asList(ORACLE, MY_SQL), true),
+	FLOAT("FLOAT()", Arrays.asList(ORACLE, MY_SQL), true),
+	REAL("REAL()", Arrays.asList(ORACLE, MY_SQL), true),
+	DOUBLE_PRECISION("DOUBLE_PRECISION", Arrays.asList(ORACLE, MY_SQL), true);
 	
 	/**
 	 * Название атрибута для отображения пользователю.
