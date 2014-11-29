@@ -84,17 +84,14 @@ public enum AttributeTypes {
 		return null;
 	}
 	
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public List<Database> getDatabases() {
 		return databases;
 	}
 
-	@Override
 	public boolean isModifyable() {
 		return modifyable;
 	}

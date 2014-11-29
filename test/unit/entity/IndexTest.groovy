@@ -74,6 +74,13 @@ public class IndexTest {
 		
 		Index index = IndexUtils.getCurrent(i.id)
 		assertTrue(index.isDeleted)
+		
+		adUtils.getConnection().eachRow("select * from app_attribute"
+			+ " where table_id = ?", [m2.id]) {
+			attr ->
+			Attribute a = AttributeUtils.getCurrent(attr.id)
+		    assertTrue(a.isDeleted)
+		}
 
 		adUtils.exitApplication()
 	}
