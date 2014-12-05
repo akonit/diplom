@@ -1,4 +1,4 @@
-package entity;
+package entity
 
 import attribute.Attribute
 import utils.Status
@@ -25,14 +25,6 @@ public class Index implements Serializable {
 	
 	private List<Attribute> attributes = new ArrayList<>();
 	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
 	public void addAttribute(Attribute attr) {
 		if (!attributes.contains(attr)) {
 			attributes.add(attr)
@@ -41,15 +33,7 @@ public class Index implements Serializable {
 	}
 	
 	public void removeAttribute(Attribute attr) {
-		attributes.remove(attr);
-		attr.indexes.remove(this);
-	}
-	
-	public void setAttributes(List<Attribute> attributes) {
-		this.attributes = attributes;
-	}
-	
-	public List<Attribute> getAttributes() {
-		return attributes;
+		attributes.remove(attr)
+		attr.indexes.remove(this)
 	}
 }

@@ -1,9 +1,9 @@
-package entity;
+package entity
 
-import java.util.List;
+import java.util.List
 import utils.Status
 
-import attribute.Attribute;
+import attribute.Attribute
 
 /**
  * Таблица БД.
@@ -34,44 +34,24 @@ public class Entity {
 	 * Список всех индексов таблицы. 
 	 */
 	private List<Index> indexes = new ArrayList<>()
-
-	public List<Attribute> getAttributes() {
-		return attributes
-	}
-
-	public void setAttributes(List<Attribute> attributes) {
-		this.attributes = attributes
-	}
 	
-	public List<Index> getIndexes() {
-		return indexes
-	}
+	/**
+	 * Координата верхнего левого угла таблицы по оси X.
+	 */
+	private long xCoord = 0;
 	
-	public void setIndexes(List<Index> indexes) {
-		this.indexes = indexes
-	}
+	/**
+	 * Координата верхнего левого угла таблицы по оси Y.
+	 */	
+	private long yCoord = 0;
 	
-	public void setName(String name) {
-		this.name = name
-	}
+	/**
+	 * Высота таблицы.
+	 */
+	private long height = 50;
 	
-	public String getName() {
-		return name
-	}
-	
-	public void setCommentary(String commentary) {
-		this.commentary = commentary
-	}
-	
-	public String getCommentary() {
-		return commentary
-	}
-	
-	public void setId(long id) {
-		this.id = id
-	}
-	
-	public long getId() {
-		return id
-	}
+	/**
+	 * Ширина таблицы.
+	 */
+	private long width = 100;
 }

@@ -1,8 +1,8 @@
-package utils;
+package utils
 
 import groovy.sql.Sql
-import org.apache.log4j.Logger;
-import sql.*;
+import org.apache.log4j.Logger
+import sql.*
 import java.nio.file.Files
 import java.nio.file.Paths
 

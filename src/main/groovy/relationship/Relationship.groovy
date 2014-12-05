@@ -1,11 +1,11 @@
-package relationship;
+package relationship
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Logger
 
-import attribute.Attribute;
-import relationship.Relationship;
+import attribute.Attribute
+import relationship.Relationship
 import utils.Status
-import entity.Entity;
+import entity.Entity
 import entity.Index
 
 /**
@@ -40,32 +40,49 @@ public class Relationship implements Serializable {
 	
 	public static class Cardinality implements Serializable {
 		
+		public enum CardinalityType {
+			
+			ZERO_ONE_OR_MORE (1),
+			ONE_OR_MORE (2),
+			ZERO_OR_ONE (3),
+			EXACTLY (4);
+			
+			private long number
+			
+			private CardinalityType(long number) {
+				this.number = number
+			}
+			
+			public static List<String> getAllTypes() {
+				List<String> types = new ArrayList<>()
+				
+				for (CardinalityType type : CardinalityType.values()) {
+					types.add(type.number)
+				}
+				
+				return types
+			}
+			
+			public static CardinalityType getByNumber(long number) {
+				for (CardinalityType type : CardinalityType.values()) {
+					if(type.number == number) {
+						return type
+					}
+				}
+				
+				return ZERO_ONE_OR_MORE
+			}
+		}
+		
 		private boolean identifying
+		
+		/**
+		 * Степень отношения для случаев, когда она явным образом задана.
+		 */
+		private long cardinalityNumber
+		
+		private CardinalityType cardinalityType
 	}
 	
 	private Cardinality cardinality = new Cardinality()
-
-	public List<Attribute> getToAttr() {
-		return toAttr
-	}
-
-	public void setToAttr(List<Attribute> toAttr) {
-		this.toAttr = toAttr
-	}
-	
-	public void setCardinality(Cardinality cardinality) {
-		this.cardinality = cardinality
-	}
-	
-	public Cardinality getCardinality() {
-		return cardinality
-	}
-	
-	public void setIndex(Index index) {
-		this.index = index;
-	}
-	
-	public Index getIndex() {
-		return index;
-	}
 }

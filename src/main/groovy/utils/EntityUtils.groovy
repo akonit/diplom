@@ -18,13 +18,19 @@ public final class EntityUtils {
 		try {
 			entity.id = System.currentTimeMillis()
 		    UserDataUtils.connection.execute("insert into app_table "
-				+ "(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
+				+ "(id, time, status, name, commentary, is_deleted, "
+				+ "x_coord, y_coord, height, width) "
+				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
 						entity.id,
 						System.currentTimeMillis(),
 						Status.DONE.getName(),
 						entity.name,
 						entity.commentary,
-						0
+						0,
+						entity.xCoord,
+						entity.yCoord,
+						entity.height,
+						entity.width
 					])
 			
 			UserDataUtils.cleanUpUndone()			
@@ -42,13 +48,19 @@ public final class EntityUtils {
 	public static void updateEntity(Entity entity) {
 		try {
 			UserDataUtils.connection.execute("insert into app_table "
-				+ "(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
+				+ "(id, time, status, name, commentary, is_deleted, "
+				+ "x_coord, y_coord, height, width) "
+				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
 						entity.id,
 						System.currentTimeMillis(),
 						Status.DONE.getName(),
 						entity.name,
 						entity.commentary,
-						0
+						0,
+						entity.xCoord,
+						entity.yCoord,
+						entity.height,
+						entity.width
 					])
 			
 			entity = getCurrent(entity.id)
@@ -73,13 +85,19 @@ public final class EntityUtils {
 				return
 			}
 		    UserDataUtils.connection.execute("insert into app_table "
-				+ "(id, time, status, name, commentary, is_deleted) values(?, ?, ?, ?, ?, ?)", [
+				+ "(id, time, status, name, commentary, is_deleted, "
+				+ "x_coord, y_coord, height, width) "
+				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
 						entity.id,
 						time,
 						Status.DONE.getName(),
 						entity.name,
 						entity.commentary,
-						1
+						1,
+						entity.xCoord,
+						entity.yCoord,
+						entity.height,
+						entity.width
 					])
 			UserDataUtils.connection.eachRow("select * from app_attribute where table_id = ? "
 				+ " and is_deleted = 0", [entity.id]) { 
@@ -119,6 +137,10 @@ public final class EntityUtils {
 		current.name = row.name
 		current.commentary = row.commentary
 		current.isDeleted = row.is_deleted == 0 ? false : true
+		current.xCoord = row.x_coord
+		current.yCoord = row.y_coord
+		current.height = row.height
+		current.width = row.width
 		
 		return current
 	}

@@ -1,10 +1,10 @@
-package sql.converter;
+package sql.converter
 
-import java.util.List;
+import java.util.List
 
-import relationship.Relationship;
+import relationship.Relationship
 import attribute.Attribute
-import entity.Entity;
+import entity.Entity
 import entity.Index
 
 /**
@@ -17,118 +17,118 @@ public class MySqlConverter extends SqlConverter {
 	@Override
 	public String convertToSql(List<Entity> entities,
 			List<Relationship> relations) {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder()
 
 		if(entities != null) {
-		    StringBuilder fk = new StringBuilder();
+		    StringBuilder fk = new StringBuilder()
 			for (Entity entity : entities) {
 				sb.append(convertEntity(entity, relations, fk)).append("\n");
 			}
 			sb.append(fk)
 		}
-		sb.delete(sb.size() - 1, sb.size());
-		return sb.toString();
+		sb.delete(sb.size() - 1, sb.size())
+		return sb.toString()
 	}
 
 	private StringBuilder convertEntity(Entity entity, List<Relationship> relations,
 		StringBuilder foreignKeys) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("CREATE TABLE ");
-		sb.append(entity.getName());
+		StringBuilder sb = new StringBuilder()
+		sb.append("CREATE TABLE ")
+		sb.append(entity.name)
 
-		if (entity.getAttributes() != null) {
-			List<String> uniques = new ArrayList<>();
-			List<String> primaries = new ArrayList<>();
+		if (entity.attributes != null) {
+			List<String> uniques = new ArrayList<>()
+			List<String> primaries = new ArrayList<>()
 			
-			sb.append(" (\n");
-			for (Attribute attribute : entity.getAttributes()) {
-				sb.append("\t").append(appendAttribute(attribute)).append("\n");
-				if (attribute.getConstraints().isUnique()) {
-					uniques.add(attribute.getName());
+			sb.append(" (\n")
+			for (Attribute attribute : entity.attributes) {
+				sb.append("\t").append(appendAttribute(attribute)).append("\n")
+				if (attribute.constraints.unique) {
+					uniques.add(attribute.name)
 				}
-				if (attribute.getConstraints().isPrimary()) {
-					primaries.add(attribute.getName())
+				if (attribute.constraints.primary) {
+					primaries.add(attribute.name)
 				}
 			}
 			
 			if (!primaries.empty) {
-				sb.append(appendPrimary(primaries, entity.getName()))
+				sb.append(appendPrimary(primaries, entity.name()))
 			}
 			
 			if (!uniques.empty) {
-				sb.append(appendUnique(uniques));
+				sb.append(appendUnique(uniques))
 			} 
 			
-			sb.append(appendIndexes(entity.indexes));
-			foreignKeys.append(appendForeign(entity, relations));
+			sb.append(appendIndexes(entity.indexes))
+			foreignKeys.append(appendForeign(entity, relations))
 			
-			sb.delete(sb.size() - 2, sb.size());
-			sb.append(");");
+			sb.delete(sb.size() - 2, sb.size())
+			sb.append(");")
 		}
-		return sb;
+		return sb
 	}
 	
 	private StringBuilder appendAttribute(Attribute attribute) {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder()
 		sb
 		  .append(attribute.name)
 		  .append(" ")
 		  .append(attribute.activeAttributeType)
 		  
-		if (!attribute.getConstraints().isNullable()) {
+		if (!attribute.constraints.nullable) {
 			sb.append(" NOT NULL")
 		}
 		
 		sb.append(",")
-		return sb;
+		return sb
 	}
 	
 	private StringBuilder appendUnique(List<String> attributes) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\t").append("UNIQUE (");
+		StringBuilder sb = new StringBuilder()
+		sb.append("\t").append("UNIQUE (")
 		for (String unique : attributes) {
-			sb.append(unique).append(", ");
+			sb.append(unique).append(", ")
 		}
-		sb.delete(sb.size() - 2, sb.size());
-		sb.append("),\n");
-		return sb;
+		sb.delete(sb.size() - 2, sb.size())
+		sb.append("),\n")
+		return sb
 	}
 	
 	private StringBuilder appendPrimary(List<String> attributes, String entityName) {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder()
 		sb
 		  .append("\t")
 		  .append("CONSTRAINT pk_")
 		  .append(entityName)
-		  .append(" PRIMARY KEY (");
+		  .append(" PRIMARY KEY (")
 		for (String primary : attributes) {
-			sb.append(primary).append(", ");
+			sb.append(primary).append(", ")
 		}
-		sb.delete(sb.size() - 2, sb.size());
+		sb.delete(sb.size() - 2, sb.size())
 		sb.append("),\n");
 		return sb;
 	}
 	
 	private StringBuilder appendIndexes(List<Index> indexes) {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder()
 		for (Index index : indexes) {
 			if (!index.attributes.empty) {
-				sb.append("\t").append("INDEX (");
+				sb.append("\t").append("INDEX (")
 				for (Attribute attr : index.attributes) {
-					sb.append(attr.name).append(", ");
+					sb.append(attr.name).append(", ")
 				}
-				sb.delete(sb.size() - 2, sb.size());
+				sb.delete(sb.size() - 2, sb.size())
 				sb.append("),\n");
 			}
 		}
-		return sb;
+		return sb
 	}
 	
 	private StringBuilder appendForeign(Entity entity, List<Relationship> relations) {
-		StringBuilder sb = new StringBuilder();
-		int num = 1;
-		for (Relationship relation : relations) {
-			if (relation.toEntity == entity) {
+		StringBuilder sb = new StringBuilder()
+		int num = 1
+		/*for (Relationship relation : relations) {
+			if (relation.toEntityId == entity.id) {
 				if (!relation.index.attributes.empty) {
 					sb
 					  .append("ALTER TABLE ")
@@ -158,7 +158,7 @@ public class MySqlConverter extends SqlConverter {
 					num++;
 				}
 			}
-		}
+		}*/
 		return sb;
 	}
 }

@@ -35,7 +35,7 @@ public class IndexTest {
 		a1.definition = "test attr" + System.currentTimeMillis()
 		a1.name = "a1"
 		a1.id = System.currentTimeMillis()
-		AttributeUtils.createAttribute(a1, m1.getId())
+		AttributeUtils.createAttribute(a1, m1.id)
 		i.addAttribute(a1)
 		Attribute a2 = new Attribute()
 		a2.attributeType = AttributeTypes.CLOB
@@ -43,18 +43,18 @@ public class IndexTest {
 		a2.definition = "test attr2" + System.currentTimeMillis()
 		a2.name = "a2"
 		a2.id = System.currentTimeMillis()
-		AttributeUtils.createAttribute(a2, m1.getId())
+		AttributeUtils.createAttribute(a2, m1.id)
 		i.addAttribute(a2)
-		IndexUtils.createIndex(i, m1.getId())
+		IndexUtils.createIndex(i, m1.id)
 		
 		m1.attributes = Arrays.asList(a1, a2)
 		
 		Relationship relation = RelationshipUtils.createRelationship(EntityUtils.getCurrent(m1.id), 
-			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false)
+			EntityUtils.getCurrent(m2.id), IndexUtils.getCurrent(i.id), false, 1, 0)
 		
 		Relationship r = RelationshipUtils.getCurrent(relation.id)
-		assertEquals(m1.getId(), r.fromEntityId)
-		assertEquals(m2.getId(), r.toEntityId)
+		assertEquals(m1.id, r.fromEntityId)
+		assertEquals(m2.id, r.toEntityId)
 		
 		def row = adUtils.getConnection().firstRow("select * from relation_to_attr")
 		assertEquals(relation.id, row.relation_id)

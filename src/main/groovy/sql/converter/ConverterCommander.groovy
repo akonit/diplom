@@ -1,6 +1,6 @@
-package sql.converter;
+package sql.converter
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Logger
 
 import entity.Entity
 import relationship.Relationship
@@ -8,13 +8,13 @@ import sql.Database
 
 public class ConverterCommander {
 
-	static Logger log = Logger.getLogger(ConverterCommander.class.getName());
+	static Logger log = Logger.getLogger(ConverterCommander.class.getName())
 	
-	private final Map<Database, SqlConverter> converters;
+	private final Map<Database, SqlConverter> converters
 	
 	public ConverterCommander () {
-		converters = new HashMap();
-		converters.put(Database.MY_SQL, new MySqlConverter());
+		converters = new HashMap()
+		converters.put(Database.MY_SQL, new MySqlConverter())
 	}
 	
 	/**
@@ -26,12 +26,12 @@ public class ConverterCommander {
 	 */
 	public String convertToSql(Database database, List<Entity> entities, 
 		List<Relationship> relations) {
-		SqlConverter converter = converters.get(database);
+		SqlConverter converter = converters.get(database)
 		if (converter == null) {
-			log.error("no such converter for " + database);
-			throw new Exception("no such converter for " + database);
+			log.error("no such converter for " + database)
+			throw new Exception("no such converter for " + database)
 		}
 		
-		return converter.convertToSql(entities, relations);
+		return converter.convertToSql(entities, relations)
 	}
 }

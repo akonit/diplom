@@ -20,7 +20,7 @@ import entity.Index
 //было что то вроде "String (FK)"
 class Attribute implements Serializable {
 	
-	static Logger log = Logger.getLogger(Attribute.class.getName());
+	static Logger log = Logger.getLogger(Attribute.class.getName())
 	
 	private long id
 	
@@ -72,38 +72,6 @@ class Attribute implements Serializable {
 		
 		//скорее всего, лишнее, если только декоративные функции
 		private boolean foreign = false
-		
-		public void setNullable(boolean nullable) {
-			this.nullable = nullable
-		}
-		
-		public boolean isNullable() {
-			return nullable
-		}
-		
-		public void setUnique(boolean unique) {
-			this.unique = unique
-		}
-		
-		public boolean isUnique() {
-			return unique
-		}
-		
-		public void setPrimary(boolean primary) {
-			this.primary = primary
-		}
-		
-		public boolean isPrimary() {
-			return primary
-		}
-		
-		public void setForeign(boolean foreign) {
-			this.foreign = foreign
-		}
-		
-		public boolean isForeign() {
-			return foreign
-		}
 	}
 	
 	private Constraints constraints
@@ -142,61 +110,5 @@ class Attribute implements Serializable {
 	public void removeFromIndex(Index index) {
 		indexes.remove(index)
 		index.attributes.remove(this)
-	}
-	
-	public long getId() {
-		return id
-	}
-
-	public void setId(long id) {
-		this.id = id
-	}
-
-	public AttributeTypes getAttributeType() {
-		return attributeType
-	}
-
-	public void setAttributeType(AttributeTypes attributeType) {
-		this.attributeType = attributeType
-	}
-	
-	public String getActiveAttributeType() {
-		return activeAttributeType
-	}
-	
-	public void setActiveAttributeType(String activeAttributeType) {
-		this.activeAttributeType = activeAttributeType
-	}
-
-	public String getDefinition() {
-		return definition
-	}
-
-	public void setDefinition(String definition) {
-		this.definition = definition
-	}
-	
-	public String getName() {
-		return name
-	}
-	
-	public void setName(String name) {
-		this.name = name
-	}
-	
-	public void setConstraints(Constraints constraints) {
-		this.constraints = constraints
-	}
-	
-	public Constraints getConstraints() {
-		return constraints
-	}
-	
-	public List<Index> getIndexes() {
-		return indexes
-	}
-	
-	public void setIndexes(List<Index> indexes) {
-		this.indexes = indexes
 	}
 }

@@ -1,6 +1,6 @@
-package attribute;
+package attribute
 
-import java.util.List;
+import java.util.List
 import sql.Database
 import static sql.Database.*
 
@@ -44,55 +44,43 @@ public enum AttributeTypes {
 	/**
 	 * Название атрибута для отображения пользователю.
 	 */
-	private String name;
+	private String name
 	
 	/**
 	 * Список БД, в которых есть такой тип атрибута.
 	 */
 	//проверить на адекватность!
-	private List<Database> databases;
+	private List<Database> databases
 	
 	/**
 	 * Можно указать размер атрибута (длину слова например).
 	 */
-	private boolean modifyable;
+	private boolean modifyable
 	
 	
 	private AttributeTypes(String name, List<Database> databases, boolean modifyable) {
-		this.name = name;
-		this.databases = databases;
-		this.modifyable = modifyable;
+		this.name = name
+		this.databases = databases
+		this.modifyable = modifyable
 	}
 	
 	public static List<String> getAllNames() {
-		List<String> names = new ArrayList<>();
+		List<String> names = new ArrayList<>()
 		
 		for (AttributeTypes type : AttributeTypes.values()) {
-			names.add(type.name);
+			names.add(type.name)
 		}
 		
-		return names;
+		return names
 	}
 	
 	public static AttributeTypes getByName(String name) {
 		for (AttributeTypes type : AttributeTypes.values()) {
 			if(type.name.equals(name)) {
-				return type;
+				return type
 			}
 		}
 		
-		return null;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public List<Database> getDatabases() {
-		return databases;
-	}
-
-	public boolean isModifyable() {
-		return modifyable;
+		return null
 	}
 }

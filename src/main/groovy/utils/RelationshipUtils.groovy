@@ -24,7 +24,8 @@ final class RelationshipUtils {
 	 */
 	//добавить валидацию на создание FK в зависимой таблице
 	public static Relationship createRelationship(Entity fromEntity, 
-			Entity toEntity, Index index, boolean identifying) {
+			Entity toEntity, Index index, boolean identifying,
+			long cardinalityType, Long cardinalityNumber) {
 		Relationship relationship = new Relationship()
 		relationship.indexId = index.id
         relationship.fromEntityId = fromEntity.id
@@ -33,6 +34,12 @@ final class RelationshipUtils {
         relationship.fromEntityTime = fromEntity.time
 		relationship.toEntityTime = toEntity.time
 		relationship.cardinality.identifying = identifying
+		relationship.cardinality.cardinalityType = Relationship.Cardinality.CardinalityType.getByNumber(cardinalityType)
+		if (cardinalityNumber == null) {
+			relationship.cardinality.cardinalityNumber = 0
+		} else {
+		    relationship.cardinality.cardinalityNumber = cardinalityNumber
+		}
 
 		List newAttrs = new ArrayList<>()
 		long time = System.currentTimeMillis()
@@ -49,16 +56,16 @@ final class RelationshipUtils {
 			toAttr.name = fromAttr.name
 			toAttr.definition = fromAttr.definition
 			toAttr.activeAttributeType = fromAttr.activeAttributeType
-			toAttr.getConstraints().setForeign(true)
+			toAttr.constraints.foreign = true
 			if (identifying) {
-				toAttr.getConstraints().setPrimary(true)
+				toAttr.constraints.primary = true
 				relationship.cardinality.identifying = true
 			}
 			toAttr.id = System.currentTimeMillis()
 			toAttr.time = time
 			toAttr.entityId = toEntity.id
 			toAttr.entityTime = toEntity.time
-			relationship.getToAttr().add(toAttr)
+			relationship.toAttr.add(toAttr)
 			newAttrs.add(toAttr)
 			AttributeUtils.createAttribute(toAttr, toEntity.id, time)
 
@@ -81,8 +88,9 @@ final class RelationshipUtils {
 			int identify = rel.cardinality.identifying ? 1 : 0
 			UserDataUtils.connection.execute("insert into app_relation "
 					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted, "
-					+ " table_to_time, table_from_time, index_time) "
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " table_to_time, table_from_time, index_time, "
+                    + " cardinality_type, cardinality_number) "
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						rel.id,
 						time,
@@ -94,7 +102,9 @@ final class RelationshipUtils {
 						0,
 						rel.toEntityTime,
 						rel.fromEntityTime,
-						rel.indexTime
+						rel.indexTime,
+						rel.cardinality.cardinalityType.number,
+						rel.cardinality.cardinalityNumber
 					])
 			
 			if (newAttrs != null & !newAttrs.isEmpty()) {
@@ -139,8 +149,9 @@ final class RelationshipUtils {
 			}
 			UserDataUtils.connection.execute("insert into app_relation "
 					+ " (id, time, status, table_from_id, table_to_id, index_id, identify, is_deleted,"
-					+ " table_to_time, table_from_time, index_time) "
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " table_to_time, table_from_time, index_time, "
+					+ " cardinality_type, cardinality_number) "
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						current.id,
 						time,
@@ -153,6 +164,8 @@ final class RelationshipUtils {
 						current.toEntityTime,
 						current.fromEntityTime,
 						current.indexTime,
+						current.cardinality.cardinalityType.number,
+						current.cardinality.cardinalityNumber
 					])
 			UserDataUtils.connection.eachRow("select * from app_attribute where id in"
 				+ " (select attribute_id from relation_to_attr where relation_id = ?) "
@@ -191,6 +204,8 @@ final class RelationshipUtils {
 		current.indexTime = row.index_time
 		current.cardinality = new Relationship.Cardinality()
 		current.cardinality.identifying = row.identify == 0 ? false : true
+		current.cardinality.cardinalityNumber = row.cardinality_number
+		current.cardinality.cardinalityType = Relationship.Cardinality.CardinalityType.getByNumber(row.cardinality_type)
 		current.isDeleted = row.is_deleted == 0 ? false : true
 		
 		return current
