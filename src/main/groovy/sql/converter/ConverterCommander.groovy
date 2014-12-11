@@ -3,6 +3,7 @@ package sql.converter
 import org.apache.log4j.Logger
 
 import entity.Entity
+import groovy.sql.Sql
 import relationship.Relationship
 import sql.Database
 
@@ -20,18 +21,16 @@ public class ConverterCommander {
 	/**
 	 * Построение SQL-кода наката по диаграмме.
 	 * @param database база данных.
-	 * @param entities таблицы.
-	 * @param relations связи между таблицами.
+	 * @param connection
 	 * @return SQL-код наката
 	 */
-	public String convertToSql(Database database, List<Entity> entities, 
-		List<Relationship> relations) {
+	public String convertToSql(Database database) {
 		SqlConverter converter = converters.get(database)
 		if (converter == null) {
 			log.error("no such converter for " + database)
 			throw new Exception("no such converter for " + database)
 		}
 		
-		return converter.convertToSql(entities, relations)
+		return converter.convertToSql()
 	}
 }

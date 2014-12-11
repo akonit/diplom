@@ -6,23 +6,26 @@ import relationship.Relationship
 import attribute.Attribute
 import entity.Entity
 import entity.Index
+import groovy.sql.Sql
+import utils.*
 
 /**
  * Особенности синтаксиса:
  * ограничение unique записывается отдельно от самих атрибутов.
  */
-// переделать все с учетом того, что перешли к бд от оперативкиs
+// переделать все с учетом того, что перешли к бд от оперативки
 public class MySqlConverter extends SqlConverter {
 
 	@Override
-	public String convertToSql(List<Entity> entities,
-			List<Relationship> relations) {
+	public String convertToSql() {
+		List<Entity> entities = getEntities()
+		List<Relationship> relations = getRelations()
 		StringBuilder sb = new StringBuilder()
 
 		if(entities != null) {
 		    StringBuilder fk = new StringBuilder()
 			for (Entity entity : entities) {
-				sb.append(convertEntity(entity, relations, fk)).append("\n");
+				sb.append(convertEntity(entity, relations, fk)).append("\n")
 			}
 			sb.append(fk)
 		}
@@ -36,12 +39,13 @@ public class MySqlConverter extends SqlConverter {
 		sb.append("CREATE TABLE ")
 		sb.append(entity.name)
 
-		if (entity.attributes != null) {
+		List<Attribute> attributes = getAttributes(entity.id)
+		if (attributes != null) {
 			List<String> uniques = new ArrayList<>()
 			List<String> primaries = new ArrayList<>()
 			
 			sb.append(" (\n")
-			for (Attribute attribute : entity.attributes) {
+			for (Attribute attribute : attributes) {
 				sb.append("\t").append(appendAttribute(attribute)).append("\n")
 				if (attribute.constraints.unique) {
 					uniques.add(attribute.name)
@@ -52,13 +56,14 @@ public class MySqlConverter extends SqlConverter {
 			}
 			
 			if (!primaries.empty) {
-				sb.append(appendPrimary(primaries, entity.name()))
+				sb.append(appendPrimary(primaries, entity.name))
 			}
 			
 			if (!uniques.empty) {
 				sb.append(appendUnique(uniques))
 			} 
 			
+			List<Index> indexses = getIndexes(entity.id)
 			sb.append(appendIndexes(entity.indexes))
 			foreignKeys.append(appendForeign(entity, relations))
 			
@@ -77,6 +82,8 @@ public class MySqlConverter extends SqlConverter {
 		  
 		if (!attribute.constraints.nullable) {
 			sb.append(" NOT NULL")
+		} else if (attribute.constraints.nullable) {
+		    sb.append(" NULL")
 		}
 		
 		sb.append(",")
@@ -112,9 +119,10 @@ public class MySqlConverter extends SqlConverter {
 	private StringBuilder appendIndexes(List<Index> indexes) {
 		StringBuilder sb = new StringBuilder()
 		for (Index index : indexes) {
-			if (!index.attributes.empty) {
+			List<Attribute> attributes = getIndexAttributes(index.id)
+			if (!attributes.empty) {
 				sb.append("\t").append("INDEX (")
-				for (Attribute attr : index.attributes) {
+				for (Attribute attr : attributes) {
 					sb.append(attr.name).append(", ")
 				}
 				sb.delete(sb.size() - 2, sb.size())
@@ -127,9 +135,13 @@ public class MySqlConverter extends SqlConverter {
 	private StringBuilder appendForeign(Entity entity, List<Relationship> relations) {
 		StringBuilder sb = new StringBuilder()
 		int num = 1
-		/*for (Relationship relation : relations) {
+		for (Relationship relation : relations) {
 			if (relation.toEntityId == entity.id) {
-				if (!relation.index.attributes.empty) {
+			    Index index = IndexUtils.getCurrent(relation.indexId)
+				List<Attribute> indexAttributes = getIndexAttributes(index.id)
+				List<Attribute> relationAttributes = getRelationAttributes(relation.id)
+				Entity fromEntity = EntityUtils.getCurrent(relation.fromEntityId)
+				if (!indexAttributes.empty) {
 					sb
 					  .append("ALTER TABLE ")
 					  .append(entity.name)
@@ -137,28 +149,28 @@ public class MySqlConverter extends SqlConverter {
 					  .append("ADD CONSTRAINT fk_")
 					    .append(entity.name)
 					    .append("_")
-					    .append(relation.index.name)
+					    .append(index.name)
 					    .append(num)
-					  .append(" FOREIGN KEY (");
-					for (Attribute attr : relation.toAttr) {
+					  .append(" FOREIGN KEY (")
+					for (Attribute attr : relationAttributes) {
 						sb.append(attr.name).append(", ")
 					}
-					sb.delete(sb.size() - 2, sb.size());
+					sb.delete(sb.size() - 2, sb.size())
 					
 					sb
 					  .append(") ")
 					  .append("REFERENCES ")
-					  .append(relation.fromEntity.name)
+					  .append(fromEntity.name)
 					  .append(" (")
-					for (Attribute attr : relation.index.attributes) {
+					for (Attribute attr : indexAttributes) {
 						sb.append(attr.name).append(", ")
 					}
-					sb.delete(sb.size() - 2, sb.size());
-					sb.append(");\n");
-					num++;
+					sb.delete(sb.size() - 2, sb.size())
+					sb.append(");\n")
+					num++
 				}
 			}
-		}*/
-		return sb;
+		}
+		return sb
 	}
 }

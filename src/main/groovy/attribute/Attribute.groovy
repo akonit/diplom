@@ -58,6 +58,7 @@ class Attribute implements Serializable {
 	 */
 	private String commentary
 	
+	//а это вообще зачем(
 	private List<Index> indexes
 	
 	/**

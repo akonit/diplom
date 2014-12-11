@@ -28,12 +28,11 @@ public class Entity {
 	/**
 	 * Список атрибутов таблицы.
 	 */
-	private List<Attribute> attributes = new ArrayList<>()
-	
-	/**
-	 * Список всех индексов таблицы. 
+	 private List<Attribute> attributes = new ArrayList<>()
+	 /**
+	 * Список всех индексов таблицы.
 	 */
-	private List<Index> indexes = new ArrayList<>()
+	 private List<Index> indexes = new ArrayList<>()
 	
 	/**
 	 * Координата верхнего левого угла таблицы по оси X.
