@@ -1,6 +1,9 @@
 package utils
 
+import java.util.List;
+
 import entity.Entity
+
 import org.apache.log4j.Logger
 
 public final class EntityUtils {
@@ -137,11 +140,28 @@ public final class EntityUtils {
 		current.name = row.name
 		current.commentary = row.commentary
 		current.isDeleted = row.is_deleted == 0 ? false : true
+		current.status = Status.DONE
 		current.xCoord = row.x_coord
 		current.yCoord = row.y_coord
 		current.height = row.height
 		current.width = row.width
 		
 		return current
+	}
+	
+	/**
+	 * Получение списка всех актуальных неудаленных таблиц.
+	 * @param connection
+	 * @return
+	 */
+	public static List<Entity> getEntities() {
+		List<Entity> entities = new ArrayList<>()
+		UserDataUtils.connection.eachRow("select distinct(id) from app_table") {
+			Entity e = EntityUtils.getCurrent(it.id)
+			if (!e.isDeleted) {
+				entities.add(e)
+			}
+		}
+		return entities
 	}
 }

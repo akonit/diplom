@@ -18,8 +18,8 @@ public class MySqlConverter extends SqlConverter {
 
 	@Override
 	public String convertToSql() {
-		List<Entity> entities = getEntities()
-		List<Relationship> relations = getRelations()
+		List<Entity> entities = EntityUtils.getEntities()
+		List<Relationship> relations = RelationshipUtils.getRelations()
 		StringBuilder sb = new StringBuilder()
 
 		if(entities != null) {
@@ -39,7 +39,7 @@ public class MySqlConverter extends SqlConverter {
 		sb.append("CREATE TABLE ")
 		sb.append(entity.name)
 
-		List<Attribute> attributes = getAttributes(entity.id)
+		List<Attribute> attributes = AttributeUtils.getAttributes(entity.id)
 		if (attributes != null) {
 			List<String> uniques = new ArrayList<>()
 			List<String> primaries = new ArrayList<>()
@@ -63,7 +63,7 @@ public class MySqlConverter extends SqlConverter {
 				sb.append(appendUnique(uniques))
 			} 
 			
-			List<Index> indexses = getIndexes(entity.id)
+			List<Index> indexses = IndexUtils.getIndexes(entity.id)
 			sb.append(appendIndexes(entity.indexes))
 			foreignKeys.append(appendForeign(entity, relations))
 			
@@ -119,7 +119,7 @@ public class MySqlConverter extends SqlConverter {
 	private StringBuilder appendIndexes(List<Index> indexes) {
 		StringBuilder sb = new StringBuilder()
 		for (Index index : indexes) {
-			List<Attribute> attributes = getIndexAttributes(index.id)
+			List<Attribute> attributes = AttributeUtils.getIndexAttributes(index.id)
 			if (!attributes.empty) {
 				sb.append("\t").append("INDEX (")
 				for (Attribute attr : attributes) {
@@ -138,8 +138,8 @@ public class MySqlConverter extends SqlConverter {
 		for (Relationship relation : relations) {
 			if (relation.toEntityId == entity.id) {
 			    Index index = IndexUtils.getCurrent(relation.indexId)
-				List<Attribute> indexAttributes = getIndexAttributes(index.id)
-				List<Attribute> relationAttributes = getRelationAttributes(relation.id)
+				List<Attribute> indexAttributes = AttributeUtils.getIndexAttributes(index.id)
+				List<Attribute> relationAttributes = AttributeUtils.getRelationAttributes(relation.id)
 				Entity fromEntity = EntityUtils.getCurrent(relation.fromEntityId)
 				if (!indexAttributes.empty) {
 					sb

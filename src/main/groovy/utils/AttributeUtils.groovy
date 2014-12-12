@@ -1,5 +1,7 @@
 package utils
 
+import java.util.List;
+
 import org.apache.log4j.Logger
 
 import attribute.AttributeTypes
@@ -63,12 +65,13 @@ final class AttributeUtils {
 	public static void updateAttribute(Attribute attr) {
 		try {
 			UserDataUtils.connection.execute("insert into app_attribute"
-					+ " (id, time, name, type, definition, commentary, is_primary, is_nullable,"
+					+ " (id, time, status, name, type, definition, commentary, is_primary, is_nullable,"
 					+ " is_unique, table_id, table_time, is_deleted)"
-					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					[
 						attr.id,
 						System.currentTimeMillis(),
+						attr.status.getName(),
 						attr.name,
 						attr.activeAttributeType,
 						attr.definition,
@@ -209,6 +212,7 @@ final class AttributeUtils {
 		current.constraints.nullable = row.is_nullable == 0 ? false : true
 		current.constraints.unique = row.is_unique == 0 ? false : true
 		current.isDeleted = row.is_deleted == 0 ? false : true
+		current.status = Status.DONE
 		
 		return current
 	}
@@ -222,4 +226,40 @@ final class AttributeUtils {
 	     attr.activeAttributeType = typeName
 	     attr.attributeType = AttributeTypes.getByName(typeName)
 	 }
+	
+	public static List<Attribute> getAttributes(long entityId) {
+		List<Attribute> attributes = new ArrayList<>()
+		UserDataUtils.connection.eachRow("select distinct(id) from app_attribute "
+			+ "where table_id = ?", [entityId]) {
+			Attribute a = AttributeUtils.getCurrent(it.id)
+			if (!a.isDeleted) {
+				attributes.add(a)
+			}
+		}
+		return attributes
+	}
+	
+	public static List<Attribute> getIndexAttributes(long indexId) {
+		List<Attribute> attributes = new ArrayList<>()
+		UserDataUtils.connection.eachRow("select distinct(attribute_id) from app_index_attribute "
+			+ "where index_id = ?", [indexId]) {
+			Attribute a = AttributeUtils.getCurrent(it.attribute_id)
+			if (!a.isDeleted) {
+				attributes.add(a)
+			}
+		}
+		return attributes
+	}
+	
+	public static List<Attribute> getRelationAttributes(long relationId) {
+		List<Attribute> attributes = new ArrayList<>()
+		UserDataUtils.connection.eachRow("select distinct(attribute_id) from relation_to_attr "
+			+ "where relation_id = ?", [relationId]) {
+			Attribute a = AttributeUtils.getCurrent(it.attribute_id)
+			if (!a.isDeleted) {
+				attributes.add(a)
+			}
+		}
+		return attributes
+	}
 }

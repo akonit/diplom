@@ -1,5 +1,7 @@
 package utils
 
+import java.util.List;
+
 import org.apache.log4j.Logger
 
 import attribute.Attribute
@@ -181,7 +183,20 @@ class IndexUtils {
 		current.name = row.name
 		current.commentary = row.commentary
 		current.isDeleted = row.is_deleted == 0 ? false : true
+		current.status = Status.DONE
 		
 		return current
+	}
+	
+	public static List<Index> getIndexes(long entityId) {
+		List<Index> indexes = new ArrayList<>()
+		UserDataUtils.connection.eachRow("select distinct(id) from app_index "
+			+ "where table_id = ?", [entityId]) {
+			Index i = IndexUtils.getCurrent(it.id)
+			if (!i.isDeleted) {
+				indexes.add(i)
+			}
+		}
+		return indexes
 	}
 }

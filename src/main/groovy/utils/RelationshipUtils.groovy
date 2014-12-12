@@ -1,5 +1,7 @@
 package utils
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import attribute.Attribute;
@@ -207,7 +209,19 @@ final class RelationshipUtils {
 		current.cardinality.cardinalityNumber = row.cardinality_number
 		current.cardinality.cardinalityType = Relationship.Cardinality.CardinalityType.getByNumber(row.cardinality_type)
 		current.isDeleted = row.is_deleted == 0 ? false : true
+		current.status = Status.DONE
 		
 		return current
+	}
+	
+	public static List<Relationship> getRelations() {
+		List<Relationship> relations = new ArrayList<>()
+		UserDataUtils.connection.eachRow("select distinct(id) from app_relation") {
+			Relationship r = RelationshipUtils.getCurrent(it.id)
+			if (!r.isDeleted) {
+				relations.add(r)
+			}
+		}
+		return relations
 	}
 }
