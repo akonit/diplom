@@ -37,20 +37,20 @@ public class Entity {
 	/**
 	 * Координата верхнего левого угла таблицы по оси X.
 	 */
-	private long xCoord = 0;
+	private long xCoord
 	
 	/**
 	 * Координата верхнего левого угла таблицы по оси Y.
 	 */	
-	private long yCoord = 0;
+	private long yCoord
 	
 	/**
 	 * Высота таблицы.
 	 */
-	private long height = 50;
+	private long height
 	
 	/**
 	 * Ширина таблицы.
 	 */
-	private long width = 100;
+	private long width
 }

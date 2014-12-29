@@ -13,7 +13,6 @@ import utils.*
  * Особенности синтаксиса:
  * ограничение unique записывается отдельно от самих атрибутов.
  */
-// переделать все с учетом того, что перешли к бд от оперативки
 public class MySqlConverter extends SqlConverter {
 
 	@Override
@@ -112,8 +111,8 @@ public class MySqlConverter extends SqlConverter {
 			sb.append(primary).append(", ")
 		}
 		sb.delete(sb.size() - 2, sb.size())
-		sb.append("),\n");
-		return sb;
+		sb.append("),\n")
+		return sb
 	}
 	
 	private StringBuilder appendIndexes(List<Index> indexes) {
@@ -126,7 +125,7 @@ public class MySqlConverter extends SqlConverter {
 					sb.append(attr.name).append(", ")
 				}
 				sb.delete(sb.size() - 2, sb.size())
-				sb.append("),\n");
+				sb.append("),\n")
 			}
 		}
 		return sb

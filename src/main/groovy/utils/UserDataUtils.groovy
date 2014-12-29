@@ -22,7 +22,7 @@ public class UserDataUtils {
 	public static void createNewFile(String name) {
 		try {
 			new File("saves").mkdir();
-			InputStream is = new FileInputStream("configuration/base.db")//ClassLoader.getSystemClassLoader().getSystemResourceAsStream("base.db")
+			InputStream is = new FileInputStream("configuration/base.db")
 		    Files.copy(is, Paths.get("saves/" + name + ".db"))
 			is.close()
 		} catch (Exception e) {

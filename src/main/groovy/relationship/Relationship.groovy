@@ -11,7 +11,6 @@ import entity.Index
 /**
  * Связи между таблицами (FK).
  */
-//добавить имя?
 public class Relationship implements Serializable {
 
 	static Logger log = Logger.getLogger(Relationship.class.getName())

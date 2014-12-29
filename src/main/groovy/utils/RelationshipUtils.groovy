@@ -24,7 +24,6 @@ final class RelationshipUtils {
 	 * @param index группа родительских атрибутов.
 	 * @return созданная связь.
 	 */
-	//добавить валидацию на создание FK в зависимой таблице
 	public static Relationship createRelationship(Entity fromEntity, 
 			Entity toEntity, Index index, boolean identifying,
 			long cardinalityType, Long cardinalityNumber) {
@@ -50,8 +49,12 @@ final class RelationshipUtils {
 			+ " aa.id = aia.attribute_id and aia.status = ? and aia.is_deleted = ?", [Status.DONE.name, 0])
 		for (def row : rows) {
 			Attribute fromAttr = AttributeUtils.getCurrent(row.id)
-			if (fromAttr == 0) {
+			if (fromAttr == null) {
 				continue
+			}
+			if (!fromAttr.constraints.primary) {
+				throw new RuntimeException("createRelationship [" +
+					fromAttr.name + "] -> attempt to use non PK as FK");
 			}
 			Attribute toAttr = new Attribute()
 			toAttr.attributeType = fromAttr.attributeType
@@ -74,14 +77,14 @@ final class RelationshipUtils {
 			if(toEntity.attributes == null) {
 				toEntity.attributes = new ArrayList<>()
 			}
-			toEntity.attributes.add(toAttr);//здесь была валидация >.<
+			toEntity.attributes.add(toAttr);
 
 			log.info("createRelationship - from {" + fromEntity.name + "} to {" + toEntity.name +
 					"} attribute {" + toAttr.name + "} by {" + index.name + "}")
 		}
 	    saveRelationship(relationship, index.id, time, newAttrs)
 		
-		return relationship;//добавить результат на модель в список связей
+		return relationship;
 	}
 	
 	private static void saveRelationship(Relationship rel, long indexId, long time, List<Attribute> newAttrs) {

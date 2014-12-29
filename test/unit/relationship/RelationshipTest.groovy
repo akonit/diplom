@@ -36,6 +36,7 @@ public class RelationshipTest {
 		a1.activeAttributeType = AttributeTypes.CLOB.name
 		a1.definition = "test attr" + System.currentTimeMillis()
 		a1.name = "a1"
+		a1.constraints.primary = true
 		a1.id = System.currentTimeMillis()
 		AttributeUtils.createAttribute(a1, m1.id)
 		m1.attributes = Arrays.asList(a1)
@@ -73,6 +74,7 @@ public class RelationshipTest {
 		a1.activeAttributeType = AttributeTypes.CLOB.name
 		a1.definition = "test attr" + System.currentTimeMillis()
 		a1.name = "a1"
+		a1.constraints.primary = true
 		a1.id = System.currentTimeMillis()
 		AttributeUtils.createAttribute(a1, m1.id)
 		i.addAttribute(a1)
@@ -81,6 +83,7 @@ public class RelationshipTest {
 		a2.activeAttributeType = AttributeTypes.CLOB.name
 		a2.definition = "test attr2" + System.currentTimeMillis()
 		a2.name = "a2"
+		a2.constraints.primary = true
 		a2.id = System.currentTimeMillis()
 		AttributeUtils.createAttribute(a2, m1.id)
 		i.addAttribute(a2)
@@ -142,6 +145,7 @@ public class RelationshipTest {
 		a1.activeAttributeType = AttributeTypes.CLOB.name
 		a1.definition = "test attr" + System.currentTimeMillis()
 		a1.name = "a1"
+		a1.constraints.primary = true
 		a1.id = System.currentTimeMillis()
 		AttributeUtils.createAttribute(a1, m1.id)
 		m1.attributes = Arrays.asList(a1)
@@ -202,6 +206,7 @@ public class RelationshipTest {
 		a1.activeAttributeType = AttributeTypes.CLOB.name
 		a1.definition = "test attr" + System.currentTimeMillis()
 		a1.name = "a1"
+		a1.constraints.primary = true
 		a1.id = System.currentTimeMillis()
 		AttributeUtils.createAttribute(a1, m1.id)
 		m1.attributes = Arrays.asList(a1)
