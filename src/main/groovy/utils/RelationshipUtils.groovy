@@ -45,8 +45,10 @@ final class RelationshipUtils {
 		List newAttrs = new ArrayList<>()
 		long time = System.currentTimeMillis()
 		def rows = UserDataUtils.connection.rows("select distinct(aa.id) as id from app_index ai, "
-			+ " app_attribute aa, app_index_attribute aia where ai.id = aia.index_id and "
-			+ " aa.id = aia.attribute_id and aia.status = ? and aia.is_deleted = ?", [Status.DONE.name, 0])
+			+ " app_attribute aa, app_index_attribute aia where ai.id = ? "
+			+ " and ai.time = ? and ai.id = aia.index_id and "
+			+ " aa.id = aia.attribute_id and aia.status = ? and aia.is_deleted = ?", 
+			[index.id, index.time, Status.DONE.name, 0])
 		for (def row : rows) {
 			Attribute fromAttr = AttributeUtils.getCurrent(row.id)
 			if (fromAttr == null) {
@@ -125,6 +127,7 @@ final class RelationshipUtils {
 							0,
 							attr.time,
 							time])
+					Thread.sleep(10)
 				}
 			}
 			

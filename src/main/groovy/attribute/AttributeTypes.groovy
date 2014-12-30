@@ -49,7 +49,6 @@ public enum AttributeTypes {
 	/**
 	 * Список БД, в которых есть такой тип атрибута.
 	 */
-	//проверить на адекватность!
 	private List<Database> databases
 	
 	/**

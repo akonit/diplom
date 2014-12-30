@@ -81,9 +81,9 @@ public class MySqlConverter extends SqlConverter {
 		  
 		if (!attribute.constraints.nullable) {
 			sb.append(" NOT NULL")
-		} else if (attribute.constraints.nullable) {
+		} /*else if (attribute.constraints.nullable) {
 		    sb.append(" NULL")
-		}
+		}*/
 		
 		sb.append(",")
 		return sb
